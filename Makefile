@@ -1,2 +1,2 @@
 install:
-	go install qpm.io/qpm
+	GOPATH=$(TRAVIS_BUILD_DIR):$(PWD):$(GOPATH) go install qpm.io/qpm

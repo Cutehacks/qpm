@@ -4,7 +4,6 @@ go:
   - 1.5
 
 env:
-    - GOPATH={TRAVIS_BUILD_DIR}
     - GIMME_OS=linux GIMME_ARCH=amd64
     - GIMME_OS=linux GIMME_ARCH=386
     - GIMME_OS=darwin GIMME_ARCH=amd64
