@@ -1,0 +1,7 @@
+# WebStorm settings
+.idea/*
+
+# generated parts of GOPATH
+bin/
+pkg/
+

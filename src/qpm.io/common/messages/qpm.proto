@@ -1,0 +1,126 @@
+syntax = "proto3";
+
+package messages;
+
+enum RepoType {
+	AUTO = 0;
+	GITHUB = 1;
+}
+
+// The values in this enum should correspond to an SPDX identifier
+enum LicenseType {
+	NONE = 0;
+	MIT = 1;
+}
+
+message Package {
+
+	message Repository {
+		RepoType type = 1;
+		string url = 2;
+	}
+
+	message Version {
+		string label = 1;
+		string revision = 2;
+	}
+
+	message Author {
+		string name = 1;
+		string email = 2;
+	}
+
+	string name = 1;
+	string description = 2;
+	Author author = 3;
+	Repository repository = 4;
+	Version version = 5;
+	repeated string dependencies = 6;
+	LicenseType license = 7;
+}
+
+message Dependency {
+	string name = 1;
+	Package.Repository repository = 2;
+	Package.Version version = 3;
+}
+
+message VersionInfo {
+	Package.Version version = 1;
+	string date_published = 2;
+}
+
+message SearchResult {
+	string name = 1;
+	string version = 2;
+	Package.Author author = 3;
+}
+
+message PingRequest {
+
+}
+
+message PingResponse {
+
+}
+
+message PublishRequest {
+	Package package_description = 1;
+	string token = 2;
+}
+
+message PublishResponse {
+
+}
+
+message DependencyRequest {
+	repeated string package_names = 1;
+}
+
+message DependencyResponse {
+	repeated Dependency dependencies = 1;
+}
+
+message SearchRequest {
+	string package_name = 1;
+}
+
+message SearchResponse {
+	repeated SearchResult results = 1;
+}
+
+message LoginRequest {
+	string email = 1;
+	string password = 2;
+	bool create = 3;
+}
+
+message LoginResponse {
+	string token = 1;
+}
+
+message InfoRequest {
+	string package_name = 1;
+}
+
+
+message InfoResponse {
+	Package package = 1;
+	repeated VersionInfo versions = 2;
+	repeated Dependency dependencies = 3;
+}
+
+service Qpm {
+
+	rpc Ping(PingRequest) returns (PingResponse) {}
+
+	rpc Publish(PublishRequest) returns (PublishResponse) {}
+
+	rpc GetDependencies(DependencyRequest) returns (DependencyResponse) {}
+
+	rpc Search(SearchRequest) returns (SearchResponse) {}
+
+	rpc Login(LoginRequest) returns (LoginResponse) {}
+
+	rpc Info(InfoRequest) returns (InfoResponse) {}
+}

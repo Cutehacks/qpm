@@ -1,0 +1,18 @@
+[submodule "src/github.com/bradfitz/http2"]
+	path = src/github.com/bradfitz/http2
+	url = https://github.com/bradfitz/http2
+[submodule "src/github.com/golang/protobuf"]
+	path = src/github.com/golang/protobuf
+	url = https://github.com/golang/protobuf
+[submodule "src/golang.org/x/net"]
+	path = src/golang.org/x/net
+	url = https://go.googlesource.com/net
+[submodule "src/google.golang.org/grpc"]
+	path = src/google.golang.org/grpc
+	url = https://github.com/grpc/grpc-go
+[submodule "src/github.com/howeyc/gopass"]
+	path = src/github.com/howeyc/gopass
+	url = https://github.com/howeyc/gopass
+[submodule "src/golang.org/x/crypto"]
+	path = src/golang.org/x/crypto
+	url = https://go.googlesource.com/crypto
