@@ -1,3 +1,6 @@
+
+[![Build Status](https://travis-ci.org/Cutehacks/qpm.svg?branch=master)](https://travis-ci.org/Cutehacks/qpm)
+
 # Introduction
 
 > qpm is a command line tool for accessing the qpm.io Qt package registry and installing dependencies.
