@@ -3,6 +3,8 @@
 
 # Introduction
 
+[![Join the chat at https://gitter.im/Cutehacks/qpm](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Cutehacks/qpm?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 > qpm is a command line tool for accessing the qpm.io Qt package registry and installing dependencies.
 
 qpm and the corresponding qpm.io service provide a way for Qt developers to search, install and
