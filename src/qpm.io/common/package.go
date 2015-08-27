@@ -33,6 +33,14 @@ var (
 	}
 )
 
+func dotSlash(dots string) string {
+	return strings.Replace(dots, ".", "/", -1)
+}
+
+func dotUnderscore(dots string) string {
+	return strings.Replace(dots, ".", "_", -1)
+}
+
 type DependencyList map[string]string
 
 // Creates a new DependencyList (which is really a map) which takes a list of package
@@ -168,6 +176,18 @@ func (pw PackageWrapper) Validate() error {
 	}
 
 	return nil
+}
+
+func (pw PackageWrapper) PriFile() string {
+	return dotUnderscore(pw.Package.Name) + ".pri"
+}
+
+func (pw PackageWrapper) QrcFile() string {
+	return dotUnderscore(pw.Package.Name) + ".qrc"
+}
+
+func (pw PackageWrapper) QrcPrefix() string {
+	return dotSlash(pw.Package.Name)
 }
 
 var (

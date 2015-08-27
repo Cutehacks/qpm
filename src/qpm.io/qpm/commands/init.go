@@ -63,14 +63,6 @@ func extractReverseDomain(email string) string {
 	return strings.Join(domainParts, ".")
 }
 
-func dotSlash(dots string) string {
-	return strings.Replace(dots, ".", "/", -1)
-}
-
-func dotUnderscore(dots string) string {
-	return strings.Replace(dots, ".", "_", -1)
-}
-
 type InitCommand struct {
 	BaseCommand
 	Pkg *common.PackageWrapper
@@ -129,21 +121,18 @@ func (ic *InitCommand) Run() error {
 }
 
 var (
-	funcMap = template.FuncMap{
-		"dotSlash": dotSlash,
-	}
-	modulePri = template.Must(template.New("modulePri").Funcs(funcMap).Parse(`
+	modulePri = template.Must(template.New("modulePri").Parse(`
 RESOURCES += \
     $$PWD/{{.QrcFile}}
 `))
-	moduleQrc = template.Must(template.New("moduleQrc").Funcs(funcMap).Parse(`
+	moduleQrc = template.Must(template.New("moduleQrc").Parse(`
 <RCC>
-    <qresource prefix="{{dotSlash .Package.Name}}">
+    <qresource prefix="{{.QrcPrefix}}">
         <file>qmldir</file>
     </qresource>
 </RCC>
 `))
-	qmldir = template.Must(template.New("qmldir").Funcs(funcMap).Parse(`
+	qmldir = template.Must(template.New("qmldir").Parse(`
 module {{.Package.Name}}
 `))
 )
@@ -167,16 +156,16 @@ func (ic InitCommand) WriteBoilerPlate(filename string, tpl *template.Template, 
 
 func (ic InitCommand) GenerateBoilerplate() {
 
-	fileBase := dotUnderscore(ic.Pkg.Name)
-
 	module := struct {
-		Package *common.PackageWrapper
-		PriFile string
-		QrcFile string
+		Package   *common.PackageWrapper
+		PriFile   string
+		QrcFile   string
+		QrcPrefix string
 	}{
-		Package: ic.Pkg,
-		PriFile: fileBase+".pri",
-		QrcFile: fileBase+".qrc",
+		Package:   ic.Pkg,
+		PriFile:   ic.Pkg.PriFile(),
+		QrcFile:   ic.Pkg.QrcFile(),
+		QrcPrefix: ic.Pkg.QrcPrefix(),
 	}
 
 	ic.WriteBoilerPlate(module.PriFile, modulePri, module)
