@@ -54,14 +54,14 @@ func (c *CheckCommand) Run() error {
 	}
 
 	// check the .pri file
-	_, err = os.Stat(c.pkg.Name + ".pri")
+	_, err = os.Stat(c.pkg.PriFile())
 	if err != nil {
 		c.Error(err)
 		return err
 	}
 
 	// check the .qrc file
-	_, err = os.Stat(c.pkg.Name + ".qrc")
+	_, err = os.Stat(c.pkg.QrcFile())
 	if err != nil {
 		c.Error(err)
 		return err
@@ -73,8 +73,8 @@ func (c *CheckCommand) Run() error {
 		c.Error(err)
 		return err
 	}
-	if strings.Count(prefix, "/") <= 1 {
-		c.Warning("the resource prefix is not a reverse domain name")
+	if prefix != c.pkg.QrcPrefix() {
+		c.Error(fmt.Errorf("the QRC prefix (%s) does not equal (%s)", prefix, c.pkg.QrcPrefix()))
 	}
 
 	// check the qmldir file
@@ -85,14 +85,13 @@ func (c *CheckCommand) Run() error {
 	}
 	var module string
 	module, err = c.qmldir()
-
-	if strings.Count(module, ".") <= 0 {
-		c.Warning("the module name is not a reverse domain name")
+	if err != nil {
+		c.Error(err)
+		return err
 	}
 
-	if !strings.EqualFold(prefix, strings.Replace(module, ".", "/", -1)) {
-		c.Log("ERROR: the resource prefix and module name do not match")
-		return nil
+	if module != c.pkg.Name {
+		c.Error(fmt.Errorf("the qmldir module (%s) does not equal (%s)", module, c.pkg.Name))
 	}
 
 	fmt.Printf("OK!\n")
@@ -118,7 +117,7 @@ type QRC_RCC struct {
 
 func (c *CheckCommand) qrc() (prefix string, err error) {
 
-	file, err := os.Open(c.pkg.Name + ".qrc")
+	file, err := os.Open(c.pkg.QrcFile())
 	if err != nil {
 		return "", err
 	}
