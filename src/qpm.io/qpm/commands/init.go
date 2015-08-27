@@ -112,6 +112,7 @@ func (ic *InitCommand) Run() error {
 
 	ic.Pkg.Name = <-Prompt("Unique package name:", suggestedName)
 	ic.Pkg.Version.Label = <-Prompt("Initial version:", ic.Pkg.Version.Label)
+	ic.Pkg.Version.Revision = "XXXXXXXX"
 
 	ic.Pkg.Repository.Url = <-Prompt("Repository:", "")
 
