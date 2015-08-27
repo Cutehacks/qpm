@@ -22,6 +22,17 @@ const (
 	ERR_FORMATTED_FIELD = "%s requires a specific format"
 )
 
+var (
+	regexPackageName = regexp.MustCompile("^[a-zA-Z]{2,}\\.[a-zA-Z0-9][a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9]?\\.[a-zA-Z0-9][a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9]?$")
+	regexVersion     = regexp.MustCompile("[0-9].[0-9].[0-9]*")
+	regexAuthorName  = regexp.MustCompile("^[\\p{L}\\s'.-]+$")
+	regexAuthorEmail = regexp.MustCompile(".+@.+\\..+")
+	regexGitSha1     = regexp.MustCompile("^[a-fA-F0-9]{8,}$")
+	regexRevision    = map[msg.RepoType]*regexp.Regexp{
+		msg.RepoType_GITHUB: regexGitSha1,
+	}
+)
+
 type DependencyList map[string]string
 
 // Creates a new DependencyList (which is really a map) which takes a list of package
@@ -123,8 +134,7 @@ func (pw PackageWrapper) Validate() error {
 		return fmt.Errorf(ERR_REQUIRED_FIELD, "name")
 	} else {
 		// Validate name
-		matched, err := regexp.MatchString("[^\\/:\\*\\?\"<>\\|.]+$", pw.Name) // forbidden characters \ / : * ? " < > | .
-		if err != nil || !matched {
+		if !regexPackageName.MatchString(pw.Name) {
 			return fmt.Errorf(ERR_FORMATTED_FIELD, "name")
 		}
 	}
@@ -132,26 +142,27 @@ func (pw PackageWrapper) Validate() error {
 		return fmt.Errorf(ERR_REQUIRED_FIELD, "version")
 	} else {
 		// Validate version label
-		matched, err := regexp.MatchString("[0-9].[0-9].[0-9]*", pw.Version.Label)
-		if err != nil || !matched {
+		if !regexVersion.MatchString(pw.Version.Label) {
 			return fmt.Errorf(ERR_FORMATTED_FIELD, "version label")
 		}
 		// Validate version revision
 		if pw.Version.Revision == "" {
 			return fmt.Errorf(ERR_REQUIRED_FIELD, "version revision")
+		} else {
+			if !regexRevision[pw.Repository.Type].MatchString(pw.Version.Revision) {
+				return fmt.Errorf(ERR_FORMATTED_FIELD, "version revision")
+			}
 		}
 	}
 	if pw.Author == nil {
 		return fmt.Errorf(ERR_REQUIRED_FIELD, "author")
 	} else {
 		// Validate author name
-		matched, err := regexp.MatchString("^[\\p{L}\\s'.-]+$", pw.Author.Name)
-		if err != nil || !matched {
+		if !regexAuthorName.MatchString(pw.Author.Name) {
 			return fmt.Errorf(ERR_FORMATTED_FIELD, "author name")
 		}
 		//Validate author email
-		matched, err = regexp.MatchString(".+@.+\\..+", pw.Author.Email)
-		if err != nil || !matched {
+		if !regexAuthorEmail.MatchString(pw.Author.Email) {
 			return fmt.Errorf(ERR_FORMATTED_FIELD, "author email")
 		}
 	}
