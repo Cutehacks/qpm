@@ -51,6 +51,26 @@ func PromptPassword(prompt string) chan string {
 	return replyChannel
 }
 
+func extractReverseDomain(email string) string {
+	emailParts := strings.Split(email, "@")
+	if len(emailParts) != 2 {
+		return ""
+	}
+	domainParts := strings.Split(emailParts[1], ".")
+	for i, j := 0, len(domainParts)-1; i < j; i, j = i+1, j-1 {
+		domainParts[i], domainParts[j] = domainParts[j], domainParts[i]
+	}
+	return strings.Join(domainParts, ".")
+}
+
+func dotSlash(dots string) string {
+	return strings.Replace(dots, ".", "/", -1)
+}
+
+func dotUnderscore(dots string) string {
+	return strings.Replace(dots, ".", "_", -1)
+}
+
 type InitCommand struct {
 	BaseCommand
 	Pkg *common.PackageWrapper
@@ -87,7 +107,10 @@ func (ic *InitCommand) Run() error {
 	} else {
 		cwd = filepath.Base(cwd)
 	}
-	ic.Pkg.Name = <-Prompt("Unique package name:", cwd)
+
+	suggestedName := extractReverseDomain(ic.Pkg.Author.Email) + "." + cwd
+
+	ic.Pkg.Name = <-Prompt("Unique package name:", suggestedName)
 	ic.Pkg.Version.Label = <-Prompt("Initial version:", ic.Pkg.Version.Label)
 
 	ic.Pkg.Repository.Url = <-Prompt("Repository:", "")
@@ -106,23 +129,21 @@ func (ic *InitCommand) Run() error {
 
 var (
 	funcMap = template.FuncMap{
-		"dotSlash": func(dots string) string {
-			return strings.Replace(dots, ".", "/", -1)
-		},
+		"dotSlash": dotSlash,
 	}
 	modulePri = template.Must(template.New("modulePri").Funcs(funcMap).Parse(`
 RESOURCES += \
-    $$PWD/{{.PackageName}}.qrc
+    $$PWD/{{.QrcFile}}
 `))
 	moduleQrc = template.Must(template.New("moduleQrc").Funcs(funcMap).Parse(`
 <RCC>
-    <qresource prefix="{{dotSlash .Namespace}}/{{.Name}}">
+    <qresource prefix="{{dotSlash .Package.Name}}">
         <file>qmldir</file>
     </qresource>
 </RCC>
 `))
 	qmldir = template.Must(template.New("qmldir").Funcs(funcMap).Parse(`
-module {{.Namespace}}.{{.Name}}
+module {{.Package.Name}}
 `))
 )
 
@@ -144,18 +165,21 @@ func (ic InitCommand) WriteBoilerPlate(filename string, tpl *template.Template, 
 }
 
 func (ic InitCommand) GenerateBoilerplate() {
+
+	fileBase := dotUnderscore(ic.Pkg.Name)
+
 	module := struct {
-		PackageName string
-		Namespace   string
-		Name        string
+		Package *common.PackageWrapper
+		PriFile string
+		QrcFile string
 	}{
-		PackageName: ic.Pkg.Name,
-		Namespace:   strings.ToLower(<-Prompt("Namespace:", "com.example")),
-		Name:        strings.ToLower(<-Prompt("Module name:", ic.Pkg.Name)),
+		Package: ic.Pkg,
+		PriFile: fileBase+".pri",
+		QrcFile: fileBase+".qrc",
 	}
 
-	ic.WriteBoilerPlate(ic.Pkg.Name+".pri", modulePri, module)
-	ic.WriteBoilerPlate(ic.Pkg.Name+".qrc", moduleQrc, module)
+	ic.WriteBoilerPlate(module.PriFile, modulePri, module)
+	ic.WriteBoilerPlate(module.QrcFile, moduleQrc, module)
 	ic.WriteBoilerPlate("qmldir", qmldir, module)
 }
 
