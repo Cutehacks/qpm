@@ -268,7 +268,14 @@ func (i *InstallCommand) extract(fileName string, destination string, name strin
 	}
 
 	if topDir != "" {
-		path := destination + "/" + name
+
+		path := destination + "/" + strings.Replace(name, ".", "/", -1)
+
+		if err := os.MkdirAll(path, 0755); err != nil {
+			i.Error(err)
+			return err
+		}
+
 		os.RemoveAll(path)
 		err := os.Rename(destination+"/"+topDir, path)
 		if err != nil {
