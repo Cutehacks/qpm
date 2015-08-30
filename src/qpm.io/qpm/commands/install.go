@@ -91,6 +91,15 @@ func (i *InstallCommand) Run() error {
 		return nil
 	}
 
+	// Download and extract the packages
+	for _, d := range response.Dependencies {
+		err = i.install(d)
+		// FIXME: should we continue installing ?
+		if err != nil {
+			return err
+		}
+	}
+
 	// Save the dependencies in package.json
 	err = i.save(response.Dependencies)
 	// FIXME: should we continue installing ?
@@ -102,15 +111,6 @@ func (i *InstallCommand) Run() error {
 	// FIXME: should we continue installing ?
 	if err != nil {
 		return err
-	}
-
-	// Download and extract the packages
-	for _, d := range response.Dependencies {
-		err = i.install(d)
-		// FIXME: should we continue installing ?
-		if err != nil {
-			return err
-		}
 	}
 
 	return nil
@@ -198,7 +198,7 @@ func (i *InstallCommand) download(url string, destination string) (fileName stri
 	return
 }
 
-func (i *InstallCommand) extract(fileName string, destination string, name string) error {
+func (i *InstallCommand) extract(fileName string, destination string, name string) (error) {
 
 	file, err := os.Open(fileName)
 
