@@ -42,7 +42,7 @@ func (r *ProgressProxyReader) Read(p []byte) (int, error) {
 
 type InstallCommand struct {
 	BaseCommand
-	pkg common.PackageWrapper
+	pkg *common.PackageWrapper
 	fs  *flag.FlagSet
 }
 
@@ -66,7 +66,8 @@ func (i *InstallCommand) Run() error {
 
 	packageName := i.fs.Arg(0)
 
-	err := i.pkg.Load()
+	var err error
+	i.pkg, err = common.LoadPackage("")
 	if err != nil {
 		i.Error(err)
 		return err

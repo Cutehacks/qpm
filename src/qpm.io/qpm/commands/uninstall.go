@@ -15,7 +15,7 @@ import (
 
 type UninstallCommand struct {
 	BaseCommand
-	pkg common.PackageWrapper
+	pkg *common.PackageWrapper
 	fs  *flag.FlagSet
 }
 
@@ -43,7 +43,8 @@ func (u *UninstallCommand) Run() error {
 		return nil
 	}
 
-	err := u.pkg.Load()
+	var err error
+	u.pkg, err = common.LoadPackage("")
 	if err != nil {
 		u.Error(err)
 		return err

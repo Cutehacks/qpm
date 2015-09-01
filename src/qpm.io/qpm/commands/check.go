@@ -17,7 +17,7 @@ import (
 
 type CheckCommand struct {
 	BaseCommand
-	pkg common.PackageWrapper
+	pkg *common.PackageWrapper
 }
 
 func NewCheckCommand(ctx core.Context) *CheckCommand {
@@ -38,7 +38,8 @@ func (c *CheckCommand) RegisterFlags(flags *flag.FlagSet) {
 func (c *CheckCommand) Run() error {
 
 	// check the package.json file
-	err := c.pkg.Load()
+	var err error
+	c.pkg, err = common.LoadPackage("")
 	if err != nil {
 		c.Error(err)
 		return err

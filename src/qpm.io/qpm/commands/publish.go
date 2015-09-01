@@ -95,8 +95,7 @@ func (p *PublishCommand) Run() error {
 	}
 
 	fmt.Println("Publishing")
-	wrapper := &common.PackageWrapper{}
-	err = wrapper.Load()
+	wrapper, err := common.LoadPackage("")
 
 	if err != nil {
 		p.Fatal("Cannot read package.json:" + err.Error())

@@ -15,6 +15,7 @@ import (
 	"regexp"
 	"strings"
 	"text/template"
+	"path/filepath"
 )
 
 const (
@@ -84,30 +85,35 @@ func NewPackage() *msg.Package {
 type PackageWrapper struct {
 	*msg.Package
 	ID int // only used on server
+	FilePath string
 }
 
-func (pw *PackageWrapper) Load() error {
-	pkg := &msg.Package{}
+func LoadPackage(path string) (*PackageWrapper, error) {
+	pw := &PackageWrapper{Package: &msg.Package{}}
 
-	if _, err := os.Stat(core.PackageFile); err == nil {
+	packageFile := filepath.Join(path, core.PackageFile)
 
-		file, err := os.Open(core.PackageFile)
+	if _, err := os.Stat(packageFile); err == nil {
+
+		file, err := os.Open(packageFile)
 		if err != nil {
-			return err
+			return pw, err
 		}
 		defer file.Close()
 
 		dec := json.NewDecoder(file)
-		err = dec.Decode(pkg)
 
+		if err := dec.Decode(pw.Package); err != nil {
+			return pw, err
+		}
+
+		pw.FilePath, err = filepath.Abs(file.Name())
 		if err != nil {
-			return err
+			return pw, err
 		}
 	}
 
-	pw.Package = pkg
-
-	return nil
+	return pw, nil
 }
 
 func (pw PackageWrapper) Save() error {
