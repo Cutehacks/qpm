@@ -132,13 +132,26 @@ func (pw PackageWrapper) Save() error {
 	}
 
 	var buf bytes.Buffer
-	json.Indent(&buf, b, "", "  ")
-	buf.WriteTo(file)
-	return nil
+	err = json.Indent(&buf, b, "", "  ")
+	if err != nil {
+		return err
+	}
+
+	_, err = buf.WriteTo(file)
+	return err
 }
 
 func (pw PackageWrapper) ParseDependencies() DependencyList {
 	return NewDependencyList(pw.Dependencies)
+}
+
+func (pw *PackageWrapper) AddDependency(dep PackageWrapper) {
+	existingDeps := pw.ParseDependencies()
+
+	newDep := dep.GetDependencySignature()
+	for _, d := range pw.Dependencies {
+		if d
+	}
 }
 
 func (pw PackageWrapper) Validate() error {
