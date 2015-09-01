@@ -89,31 +89,29 @@ type PackageWrapper struct {
 }
 
 func LoadPackage(path string) (*PackageWrapper, error) {
+	var err error
 	pw := &PackageWrapper{Package: &msg.Package{}}
 
 	packageFile := filepath.Join(path, core.PackageFile)
 
-	if _, err := os.Stat(packageFile); err == nil {
+	if _, err = os.Stat(packageFile); err == nil {
+		var file *os.File
 
-		file, err := os.Open(packageFile)
-		if err != nil {
+		if file, err = os.Open(packageFile); err != nil {
 			return pw, err
 		}
 		defer file.Close()
 
 		dec := json.NewDecoder(file)
 
-		if err := dec.Decode(pw.Package); err != nil {
+		if err = dec.Decode(pw.Package); err != nil {
 			return pw, err
 		}
 
 		pw.FilePath, err = filepath.Abs(file.Name())
-		if err != nil {
-			return pw, err
-		}
 	}
 
-	return pw, nil
+	return pw, err
 }
 
 func (pw PackageWrapper) Save() error {
