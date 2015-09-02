@@ -12,10 +12,35 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"path/filepath"
 	"qpm.io/common"
 	msg "qpm.io/common/messages"
 	"qpm.io/qpm/core"
 	"strings"
+	"text/template"
+)
+
+var packageFuncs = template.FuncMap{
+	"relPriFile": func(vendorDir string, dep *common.PackageWrapper) string {
+		abs := filepath.Join(dep.RootDir(), dep.PriFile())
+		rel, err := filepath.Rel(vendorDir, abs)
+		if err == nil {
+			return rel
+		} else {
+			return abs
+		}
+	},
+}
+
+var (
+	vendorPri = template.Must(template.New("vendorPri").Funcs(packageFuncs).Parse(`
+DEFINES += QPM_INIT\\(E\\)=\"E.addImportPath(QStringLiteral(\\\"qrc:/\\\"));\"
+
+{{$vendirDir := .VendorDir}}
+{{range $dep := .Dependencies}}
+include($$PWD/{{relPriFile $vendirDir $dep}})
+{{end}}
+`))
 )
 
 type ProgressProxyReader struct {
@@ -42,8 +67,9 @@ func (r *ProgressProxyReader) Read(p []byte) (int, error) {
 
 type InstallCommand struct {
 	BaseCommand
-	pkg *common.PackageWrapper
-	fs  *flag.FlagSet
+	pkg       *common.PackageWrapper
+	fs        *flag.FlagSet
+	vendorDir string
 }
 
 func NewInstallCommand(ctx core.Context) *InstallCommand {
@@ -60,6 +86,13 @@ func (i InstallCommand) Description() string {
 
 func (i *InstallCommand) RegisterFlags(flags *flag.FlagSet) {
 	i.fs = flags
+
+	// TODO: Support other directory names on the command line?
+	var err error
+	i.vendorDir, err = filepath.Abs(core.Vendor)
+	if err != nil {
+		i.vendorDir = core.Vendor
+	}
 }
 
 func (i *InstallCommand) Run() error {
@@ -69,8 +102,25 @@ func (i *InstallCommand) Run() error {
 	var err error
 	i.pkg, err = common.LoadPackage("")
 	if err != nil {
-		i.Error(err)
-		return err
+		// A missing package file is only an error if packageName is empty
+		if os.IsNotExist(err) {
+			if packageName == "" {
+				err = fmt.Errorf("No %s file found", core.PackageFile)
+				i.Error(err)
+				return err
+			} else {
+				// Create a new package
+				file, err := filepath.Abs(core.PackageFile)
+				if err != nil {
+					i.Error(err)
+					return err
+				}
+				i.pkg = common.NewPackageWrapper(file)
+			}
+		} else {
+			i.Error(err)
+			return err
+		}
 	}
 
 	var packageNames []string
@@ -92,23 +142,29 @@ func (i *InstallCommand) Run() error {
 		return nil
 	}
 
+	// create the vendor directory if needed
+	if _, err = os.Stat(i.vendorDir); err != nil {
+		err = os.Mkdir(i.vendorDir, 0755)
+	}
+
 	// Download and extract the packages
+	packages := []*common.PackageWrapper{}
 	for _, d := range response.Dependencies {
-		err = i.install(d)
-		// FIXME: should we continue installing ?
+		p, err := i.install(d)
 		if err != nil {
 			return err
 		}
+		packages = append(packages, p)
 	}
 
 	// Save the dependencies in package.json
-	err = i.save(response.Dependencies)
+	err = i.save(packages)
 	// FIXME: should we continue installing ?
 	if err != nil {
 		return err
 	}
 
-	err = i.pkg.UpdatePri(response.Dependencies)
+	err = i.postInstall(packages)
 	// FIXME: should we continue installing ?
 	if err != nil {
 		return err
@@ -117,45 +173,45 @@ func (i *InstallCommand) Run() error {
 	return nil
 }
 
-func (i *InstallCommand) install(d *msg.Dependency) error {
+func (i *InstallCommand) install(d *msg.Dependency) (*common.PackageWrapper, error) {
 
 	url := core.GitHub + "/" + d.Repository.Url + "/" + core.Tarball
 
-	signature := i.pkg.GetDependencySignature(d)
+	signature := strings.Join([]string{d.Name, d.Version.Label}, "@")
 	fmt.Println("Installing", signature)
 
-	fileName, err := i.download(url, core.Vendor)
+	fileName, err := i.download(url, i.vendorDir)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	err = i.extract(fileName, core.Vendor, d.Name)
+	pkg, err := i.extract(fileName, i.vendorDir)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return os.Remove(fileName)
+	return pkg, os.Remove(fileName)
 }
 
-func (i *InstallCommand) save(dependencies []*msg.Dependency) error {
+func (i *InstallCommand) save(newDeps []*common.PackageWrapper) error {
 
-	// FIXME: inefficient
-	var newDependencies []string
-	for _, d := range dependencies {
-		exists := false
-		signature := i.pkg.GetDependencySignature(d)
-		for _, dependency := range i.pkg.Dependencies {
-			if dependency == signature {
-				exists = true
-				i.Info("The package is already a dependency : " + signature)
-				break
+	existingDeps := i.pkg.ParseDependencies()
+
+	for _, d := range newDeps {
+		existingVersion, exists := existingDeps[d.Name]
+		if exists {
+			if d.Version.Label == existingVersion {
+				i.Info("The package is already a dependency : " + d.GetDependencySignature())
+			} else {
+				// TODO: Handle conflicts
+				err := fmt.Errorf("Conflict for package %s. Version %s != %s", d.Name, existingVersion, d.Version.Label)
+				i.Error(err)
+				return err
 			}
-		}
-		if !exists {
-			newDependencies = append(newDependencies, signature)
+		} else {
+			i.pkg.Dependencies = append(i.pkg.Dependencies, d.GetDependencySignature())
 		}
 	}
-	i.pkg.Dependencies = append(i.pkg.Dependencies, newDependencies...)
 
 	err := i.pkg.Save()
 	if err != nil {
@@ -199,13 +255,13 @@ func (i *InstallCommand) download(url string, destination string) (fileName stri
 	return
 }
 
-func (i *InstallCommand) extract(fileName string, destination string, name string) (error) {
+func (i *InstallCommand) extract(fileName string, destination string) (*common.PackageWrapper, error) {
 
 	file, err := os.Open(fileName)
 
 	if err != nil {
 		i.Error(err)
-		return err
+		return nil, err
 	}
 
 	defer file.Close()
@@ -216,7 +272,7 @@ func (i *InstallCommand) extract(fileName string, destination string, name strin
 	if strings.HasSuffix(fileName, ".gz") {
 		if fileReader, err = gzip.NewReader(file); err != nil {
 			i.Error(err)
-			return err
+			return nil, err
 		}
 		defer fileReader.Close()
 	}
@@ -231,7 +287,7 @@ func (i *InstallCommand) extract(fileName string, destination string, name strin
 				break
 			}
 			i.Error(err)
-			return err
+			return nil, err
 		}
 
 		filename := destination + "/" + header.Name
@@ -243,20 +299,20 @@ func (i *InstallCommand) extract(fileName string, destination string, name strin
 			err = os.MkdirAll(filename, os.FileMode(header.Mode)) // or use 0755
 			if err != nil {
 				i.Error(err)
-				return err
+				return nil, err
 			}
 
 		case tar.TypeReg:
 			writer, err := os.Create(filename)
 			if err != nil {
 				i.Error(err)
-				return err
+				return nil, err
 			}
 			io.Copy(writer, tarBallReader)
 			err = os.Chmod(filename, os.FileMode(header.Mode))
 			if err != nil {
 				i.Error(err)
-				return err
+				return nil, err
 			}
 			writer.Close()
 
@@ -270,18 +326,69 @@ func (i *InstallCommand) extract(fileName string, destination string, name strin
 
 	if topDir != "" {
 
-		path := destination + "/" + strings.Replace(name, ".", "/", -1)
+		src := filepath.Join(destination, topDir)
+
+		pkg, err := common.LoadPackage(src)
+		if err != nil {
+			i.Error(err)
+			return pkg, err
+		}
+
+		path := filepath.Join(destination, pkg.QrcPrefix())
 
 		if err := os.MkdirAll(path, 0755); err != nil {
 			i.Error(err)
-			return err
+			return pkg, err
 		}
 
 		os.RemoveAll(path)
-		err := os.Rename(destination+"/"+topDir, path)
+
+		if err = os.Rename(src, path); err != nil {
+			i.Error(err)
+			return pkg, err
+		}
+
+		// Reload it from the new location
+		pkg, err = common.LoadPackage(path)
 		if err != nil {
 			i.Error(err)
 		}
+
+		return pkg, err
+	}
+
+	return nil, nil
+}
+
+func (i *InstallCommand) postInstall(dependencies []*common.PackageWrapper) error {
+
+	vendorPriFile := filepath.Join(i.vendorDir, core.Vendor+".pri")
+
+	var file *os.File
+	var err error
+
+	// re-create the .pri file
+	file, err = os.Create(vendorPriFile)
+
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	data := struct {
+		VendorDir    string
+		Package      *common.PackageWrapper
+		Dependencies []*common.PackageWrapper
+	}{
+		i.vendorDir,
+		i.pkg,
+		dependencies,
+	}
+
+	err = vendorPri.Execute(file, data)
+	if err != nil {
+		i.Error(err)
+		return err
 	}
 
 	return nil

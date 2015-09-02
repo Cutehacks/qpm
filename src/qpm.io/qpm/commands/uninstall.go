@@ -83,7 +83,8 @@ func (u *UninstallCommand) Run() error {
 		dependencies = append(dependencies, &dep)
 	}
 
-	u.pkg.UpdatePri(dependencies)
+	// TODO: Fix this
+//	u.pkg.UpdatePri(dependencies)
 
 	// Remove the package files
 	os.RemoveAll(core.Vendor + "/" + packageName)

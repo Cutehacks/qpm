@@ -14,7 +14,6 @@ import (
 	"qpm.io/qpm/core"
 	"regexp"
 	"strings"
-	"text/template"
 	"path/filepath"
 )
 
@@ -88,6 +87,15 @@ type PackageWrapper struct {
 	FilePath string
 }
 
+func NewPackageWrapper(file string) *PackageWrapper {
+	return &PackageWrapper{
+		Package: &msg.Package{
+
+		},
+		FilePath: file,
+	}
+}
+
 func LoadPackage(path string) (*PackageWrapper, error) {
 	var err error
 	pw := &PackageWrapper{Package: &msg.Package{}}
@@ -145,15 +153,6 @@ func (pw PackageWrapper) ParseDependencies() DependencyList {
 	return NewDependencyList(pw.Dependencies)
 }
 
-func (pw *PackageWrapper) AddDependency(dep PackageWrapper) {
-	existingDeps := pw.ParseDependencies()
-
-	newDep := dep.GetDependencySignature()
-	for _, d := range pw.Dependencies {
-		if d
-	}
-}
-
 func (pw PackageWrapper) Validate() error {
 	if pw.Name == "" {
 		return fmt.Errorf(ERR_REQUIRED_FIELD, "name")
@@ -195,6 +194,10 @@ func (pw PackageWrapper) Validate() error {
 	return nil
 }
 
+func (pw PackageWrapper) RootDir() string {
+	return filepath.Dir(pw.FilePath)
+}
+
 func (pw PackageWrapper) PriFile() string {
 	return dotUnderscore(pw.Package.Name) + ".pri"
 }
@@ -207,50 +210,6 @@ func (pw PackageWrapper) QrcPrefix() string {
 	return dotSlash(pw.Package.Name)
 }
 
-var (
-	vendorPri = template.Must(template.New("vendorPri").Parse(`
-DEFINES += QPM_INIT\\(E\\)=\"E.addImportPath(QStringLiteral(\\\"qrc:/\\\"));\"
-{{range $dep := .}}include($$PWD/{{$dep.Name}}/{{$dep.Name}}.pri){{"\n"}}{{end}}
-`))
-)
-
-func (pw PackageWrapper) writePri(filename string, tpl *template.Template, data interface{}) error {
-
-	var file *os.File
-	var err error
-
-	// create the vendor directory if needed
-	if _, err = os.Stat(core.Vendor); err != nil {
-		err = os.Mkdir(core.Vendor, 0755)
-	}
-
-	// re-create the .pri file
-	file, err = os.Create(filename)
-
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
-	err = tpl.Execute(file, data)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (pw PackageWrapper) UpdatePri(dependencies []*msg.Dependency) error {
-	return pw.writePri(core.Vendor+"/"+core.Vendor+".pri", vendorPri, dependencies)
-}
-
-// FIXME: attach this to Dependency
-func (pw PackageWrapper) GetDependencySignature(d *msg.Dependency) string {
-	if d != nil {
-		if d.Version != nil {
-			return d.Name + "@" + d.Version.Label
-		}
-		return d.Name
-	}
-	return ""
+func (pw PackageWrapper) GetDependencySignature() string {
+	return strings.Join([]string{pw.Name, pw.Version.Label}, "@")
 }
