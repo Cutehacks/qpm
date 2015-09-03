@@ -28,9 +28,6 @@ var (
 	regexAuthorName  = regexp.MustCompile("^[\\p{L}\\s'.-]+$")
 	regexAuthorEmail = regexp.MustCompile(".+@.+\\..+")
 	regexGitSha1     = regexp.MustCompile("^[a-fA-F0-9]{8,}$")
-	regexRevision    = map[msg.RepoType]*regexp.Regexp{
-		msg.RepoType_GITHUB: regexGitSha1,
-	}
 )
 
 func dotSlash(dots string) string {
@@ -211,10 +208,6 @@ func (pw PackageWrapper) Validate() error {
 		// Validate version revision
 		if pw.Version.Revision == "" {
 			return fmt.Errorf(ERR_REQUIRED_FIELD, "version revision")
-		} else {
-			if !regexRevision[pw.Repository.Type].MatchString(pw.Version.Revision) {
-				return fmt.Errorf(ERR_FORMATTED_FIELD, "version revision")
-			}
 		}
 	}
 	if pw.Author == nil {
