@@ -94,6 +94,11 @@ func (p *PublishCommand) Run() error {
 		return err
 	}
 
+	fmt.Println("Running check")
+	if err := NewCheckCommand(p.Ctx).Run(); err != nil {
+		p.Fatal(err.Error())
+	}
+
 	fmt.Println("Publishing")
 	wrapper, err := common.LoadPackage("")
 
