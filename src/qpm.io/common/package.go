@@ -122,6 +122,30 @@ func LoadPackage(path string) (*PackageWrapper, error) {
 	return pw, err
 }
 
+func LoadPackages(vendorDir string) (map[string]*PackageWrapper, error) {
+	packageMap := make(map[string]*PackageWrapper)
+
+	if _, err := os.Stat(vendorDir); err != nil {
+		return packageMap, err
+	}
+
+	err := filepath.Walk(vendorDir, func(path string, info os.FileInfo, err error) error {
+		if !info.IsDir() && filepath.Base(path) == core.PackageFile {
+			pkg, err := LoadPackage(filepath.Dir(path))
+			if err != nil {
+				return err
+			}
+			packageMap[pkg.Name] = pkg
+
+			// found what we're looking for so skip the rest
+			return filepath.SkipDir
+		}
+		return nil
+	})
+
+	return packageMap, err
+}
+
 func (pw PackageWrapper) Save() error {
 	var file *os.File
 	var err error
