@@ -365,6 +365,7 @@ func (i *InstallCommand) postInstall(dependencies []*common.PackageWrapper) erro
 		i.Error(err)
 		return err
 	}
+	return nil
 }
 
 // Generates a vendor.pri inside vendorDir using the information contained in the package file
