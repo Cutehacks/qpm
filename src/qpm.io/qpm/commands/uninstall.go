@@ -7,16 +7,15 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"path/filepath"
 	"qpm.io/common"
-	msg "qpm.io/common/messages"
 	"qpm.io/qpm/core"
-	"strings"
 )
 
 type UninstallCommand struct {
 	BaseCommand
-	pkg *common.PackageWrapper
-	fs  *flag.FlagSet
+	fs        *flag.FlagSet
+	vendorDir string
 }
 
 func NewUninstallCommand(ctx core.Context) *UninstallCommand {
@@ -33,6 +32,12 @@ func (u UninstallCommand) Description() string {
 
 func (u *UninstallCommand) RegisterFlags(flags *flag.FlagSet) {
 	u.fs = flags
+
+	var err error
+	u.vendorDir, err = filepath.Abs(core.Vendor)
+	if err != nil {
+		u.vendorDir = core.Vendor
+	}
 }
 
 func (u *UninstallCommand) Run() error {
@@ -40,63 +45,59 @@ func (u *UninstallCommand) Run() error {
 	packageName := u.fs.Arg(0)
 
 	if packageName == "" {
-		return nil
+		err := fmt.Errorf("Must supply a package to uninstall")
+		u.Error(err)
+		return err
 	}
 
-	var err error
-	u.pkg, err = common.LoadPackage("")
+	dependencyMap, err := common.LoadPackages(u.vendorDir)
 	if err != nil {
 		u.Error(err)
 		return err
 	}
 
-	// remove the dependency
-	i := u.index(len(u.pkg.Dependencies), func(i int) bool {
-		signature := u.pkg.Dependencies[i]
-		parts := strings.Split(signature, "@")
-		return strings.ToLower(parts[0]) == strings.ToLower(packageName)
-	})
-	if i == -1 {
-		fmt.Println("The package", packageName, "was not found")
-		return nil
-	}
-
-	fmt.Println("Uninstalling", u.pkg.Dependencies[i])
-
-	u.pkg.Dependencies = append(u.pkg.Dependencies[:i], u.pkg.Dependencies[i+1:]...)
-
-	// Save the dependencies in package.json
-	err = u.pkg.Save()
-	if err != nil {
+	toRemove, exists := dependencyMap[packageName]
+	if !exists {
+		err := fmt.Errorf("Package %s was not found", packageName)
 		u.Error(err)
 		return err
 	}
 
-	var dependencies []*msg.Dependency
-	for _, signature := range u.pkg.Dependencies {
-		parts := strings.Split(signature, "@")
-		var dep msg.Dependency
-		dep.Name = strings.ToLower(parts[0])
-		var ver msg.Package_Version
-		ver.Label = strings.ToLower(parts[1])
-		dep.Version = &ver
-		dependencies = append(dependencies, &dep)
-	}
-
-	// TODO: Fix this
-//	u.pkg.UpdatePri(dependencies)
-
-	// Remove the package files
-	os.RemoveAll(core.Vendor + "/" + packageName)
-
-	return nil
-}
-
-func (u *UninstallCommand) index(limit int, predicate func(i int) bool) int {
-	for i := 0; i < limit; i++ {
-		if predicate(i) {
-			return i
+	// Does the current directory contain a package file that needs updating?
+	pkg, err := common.LoadPackage("")
+	if err != nil && !os.IsNotExist(err) {
+		u.Error(err)
+		return err
+	} else if err == nil {
+		pkg.RemoveDependency(toRemove)
+		if err := pkg.Save(); err != nil {
+			u.Error(err)
+			return err
 		}
 	}
-	return -1
+
+	var deps []*common.PackageWrapper
+	for _, dep := range dependencyMap {
+		deps = append(deps, dep)
+	}
+
+	// Regenerate vendor.pri
+	if err := GenerateVendorPri(u.vendorDir, pkg, deps); err != nil {
+		u.Error(err)
+		return err
+	}
+
+	fmt.Println("Uninstalling", toRemove.Name)
+
+	// Final step is to delete the dependency's directory. This should
+	// be done last since after this step, the info about the package is
+	// gone.
+	if err := os.RemoveAll(toRemove.RootDir()); err != nil {
+		u.Error(err)
+		return err
+	}
+
+	// TODO: Cleanup empty leaf directories in parent dirs
+
+	return nil
 }

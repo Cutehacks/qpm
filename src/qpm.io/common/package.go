@@ -41,6 +41,11 @@ func dotUnderscore(dots string) string {
 	return strings.Replace(dots, ".", "_", -1)
 }
 
+// Takes a name@version string and return just name
+func packageName(release string) string {
+	return strings.Split(release, "@")[0]
+}
+
 type DependencyList map[string]string
 
 // Creates a new DependencyList (which is really a map) which takes a list of package
@@ -171,6 +176,16 @@ func (pw PackageWrapper) Save() error {
 
 	_, err = buf.WriteTo(file)
 	return err
+}
+
+// Remove a package from this package's list of dependencies.
+func (pw *PackageWrapper) RemoveDependency(dep *PackageWrapper) {
+	for i, d := range pw.Dependencies {
+		if packageName(d) == dep.Name {
+			pw.Dependencies = append(pw.Dependencies[:i], pw.Dependencies[i+1:]...)
+			return
+		}
+	}
 }
 
 func (pw PackageWrapper) ParseDependencies() DependencyList {
