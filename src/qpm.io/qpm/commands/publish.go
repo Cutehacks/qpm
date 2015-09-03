@@ -98,7 +98,7 @@ func (p *PublishCommand) Run() error {
 	wrapper, err := common.LoadPackage("")
 
 	if err != nil {
-		p.Fatal("Cannot read package.json:" + err.Error())
+		p.Fatal("Cannot read " + core.PackageFile + ": " + err.Error())
 	}
 
 	_, err = p.Ctx.Client.Publish(context.Background(), &msg.PublishRequest{

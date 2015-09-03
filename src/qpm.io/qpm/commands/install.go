@@ -157,7 +157,7 @@ func (i *InstallCommand) Run() error {
 		packages = append(packages, p)
 	}
 
-	// Save the dependencies in package.json
+	// Save the dependencies in the package file
 	err = i.save(packages)
 	// FIXME: should we continue installing ?
 	if err != nil {

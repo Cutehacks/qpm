@@ -9,7 +9,7 @@ import (
 
 const (
 	Version     = "0.0.1"
-	PackageFile = "package.json"
+	PackageFile = "qpm.json"
 	Vendor      = "vendor"
 	Address     = "pkg.qpm.io:7000"
 	GitHub      = "https://api.github.com/repos"

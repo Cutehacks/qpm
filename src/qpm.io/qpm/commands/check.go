@@ -37,7 +37,7 @@ func (c *CheckCommand) RegisterFlags(flags *flag.FlagSet) {
 
 func (c *CheckCommand) Run() error {
 
-	// check the package.json file
+	// check the package file
 	var err error
 	c.pkg, err = common.LoadPackage("")
 	if err != nil {

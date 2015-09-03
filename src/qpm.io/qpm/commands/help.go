@@ -53,7 +53,7 @@ Usage:
 
 	case "install":
 		fmt.Println(`
-Installs the packages listed as dependencies in the 'package.json' file or the given [PACKAGE].
+Installs the packages listed as dependencies in the package file or the given [PACKAGE].
 
 Usage:
 	qpm install [PACKAGE]
