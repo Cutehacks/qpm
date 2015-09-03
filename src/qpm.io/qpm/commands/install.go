@@ -361,8 +361,17 @@ func (i *InstallCommand) extract(fileName string, destination string) (*common.P
 }
 
 func (i *InstallCommand) postInstall(dependencies []*common.PackageWrapper) error {
+	if err := GenerateVendorPri(i.vendorDir, i.pkg, dependencies); err != nil {
+		i.Error(err)
+		return err
+	}
+}
 
-	vendorPriFile := filepath.Join(i.vendorDir, core.Vendor+".pri")
+// Generates a vendor.pri inside vendorDir using the information contained in the package file
+// and the dependencies
+func GenerateVendorPri(vendorDir string, pkg *common.PackageWrapper, deps []*common.PackageWrapper) error {
+
+	vendorPriFile := filepath.Join(vendorDir, core.Vendor+".pri")
 
 	var file *os.File
 	var err error
@@ -380,14 +389,12 @@ func (i *InstallCommand) postInstall(dependencies []*common.PackageWrapper) erro
 		Package      *common.PackageWrapper
 		Dependencies []*common.PackageWrapper
 	}{
-		i.vendorDir,
-		i.pkg,
-		dependencies,
+		vendorDir,
+		pkg,
+		deps,
 	}
 
-	err = vendorPri.Execute(file, data)
-	if err != nil {
-		i.Error(err)
+	if err := vendorPri.Execute(file, data); err != nil {
 		return err
 	}
 
