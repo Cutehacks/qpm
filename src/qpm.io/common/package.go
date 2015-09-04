@@ -69,6 +69,7 @@ func NewPackage() *msg.Package {
 		Description: "",
 		Version: &msg.Package_Version{
 			Label: "0.0.1",
+			Fingerprint: "",
 		},
 		Author: &msg.Package_Author{
 			Name:  "",

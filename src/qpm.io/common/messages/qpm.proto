@@ -23,6 +23,7 @@ message Package {
 	message Version {
 		string label = 1;
 		string revision = 2;
+		string fingerprint = 3;
 	}
 
 	message Author {

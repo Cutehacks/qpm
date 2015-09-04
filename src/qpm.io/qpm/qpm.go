@@ -40,6 +40,8 @@ func main() {
 	registry.RegisterSubCommand("publish", cmd.NewPublishCommand(ctx))
 	registry.RegisterSubCommand("help", cmd.NewHelpCommand(ctx))
 	registry.RegisterSubCommand("check", cmd.NewCheckCommand(ctx))
+	registry.RegisterSubCommand("sign", cmd.NewSignCommand(ctx))
+	registry.RegisterSubCommand("verify", cmd.NewVerifyCommand(ctx))
 	//registry.RegisterSubCommand("deprecate", cmd.NewDeprecateCommand(ctx))
 	//registry.RegisterSubCommand("prune", cmd.NewPruneCommand(ctx))
 

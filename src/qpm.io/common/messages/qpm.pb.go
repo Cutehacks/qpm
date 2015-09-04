@@ -128,8 +128,9 @@ func (m *Package_Repository) String() string { return proto.CompactTextString(m)
 func (*Package_Repository) ProtoMessage()    {}
 
 type Package_Version struct {
-	Label    string `protobuf:"bytes,1,opt,name=label" json:"label,omitempty"`
-	Revision string `protobuf:"bytes,2,opt,name=revision" json:"revision,omitempty"`
+	Label       string `protobuf:"bytes,1,opt,name=label" json:"label,omitempty"`
+	Revision    string `protobuf:"bytes,2,opt,name=revision" json:"revision,omitempty"`
+	Fingerprint string `protobuf:"bytes,3,opt,name=fingerprint" json:"fingerprint,omitempty"`
 }
 
 func (m *Package_Version) Reset()         { *m = Package_Version{} }

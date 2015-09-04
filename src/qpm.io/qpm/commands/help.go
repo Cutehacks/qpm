@@ -75,6 +75,22 @@ Usage:
 	qpm publish
 `)
 
+	case "sign":
+		fmt.Println(`
+Creates a PGP signature for contents of the project.
+
+Usage:
+	qpm sign
+`)
+
+	case "verify":
+		fmt.Println(`
+Verifies the the content and publisher of the given [PACKAGE], provided the package has been signed.
+
+Usage:
+	qpm verify [PACKAGE]
+`)
+
 	case "help":
 		fallthrough
 
@@ -85,6 +101,7 @@ Shows the help text for the given [COMMAND]. If [COMMAND] is empty, it shows thi
 Usage:
 	qpm help COMMAND
 `)
+
 	}
 
 	return nil
