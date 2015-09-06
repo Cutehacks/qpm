@@ -64,35 +64,31 @@ func (c *CheckCommand) Run() error {
 	// check the .qrc file
 	_, err = os.Stat(c.pkg.QrcFile())
 	if err != nil {
-		c.Error(err)
-		return err
+		c.Warning(err.Error())
 	}
 
 	var prefix string
 	prefix, err = c.qrc()
 	if err != nil {
-		c.Error(err)
-		return err
-	}
-	if prefix != c.pkg.QrcPrefix() {
+		c.Warning(err.Error())
+	} else if prefix != c.pkg.QrcPrefix() {
 		c.Error(fmt.Errorf("the QRC prefix (%s) does not equal (%s)", prefix, c.pkg.QrcPrefix()))
 	}
 
 	// check the qmldir file
 	_, err = os.Stat("qmldir")
 	if err != nil {
-		c.Error(err)
-		return err
-	}
-	var module string
-	module, err = c.qmldir()
-	if err != nil {
-		c.Error(err)
-		return err
-	}
-
-	if module != c.pkg.Name {
-		c.Error(fmt.Errorf("the qmldir module (%s) does not equal (%s)", module, c.pkg.Name))
+		c.Warning(err.Error())
+	} else {
+		var module string
+		module, err = c.qmldir()
+		if err != nil {
+			c.Error(err)
+			return err
+		}
+		if module != c.pkg.Name {
+			c.Error(fmt.Errorf("the qmldir module (%s) does not equal (%s)", module, c.pkg.Name))
+		}
 	}
 
 	fmt.Printf("OK!\n")
