@@ -6,11 +6,10 @@ package common
 import (
 	//	"crypto/x509/pkix"
 	//	"debug/elf"
-	"bytes"
-	"encoding/json"
 	"fmt"
 	"os"
 	msg "qpm.io/common/messages"
+	json "github.com/golang/protobuf/jsonpb"
 	"qpm.io/qpm/core"
 	"regexp"
 	"strings"
@@ -113,9 +112,7 @@ func LoadPackage(path string) (*PackageWrapper, error) {
 		}
 		defer file.Close()
 
-		dec := json.NewDecoder(file)
-
-		if err = dec.Decode(pw.Package); err != nil {
+		if err = json.Unmarshal(file, pw.Package); err != nil {
 			return pw, err
 		}
 
@@ -161,19 +158,11 @@ func (pw PackageWrapper) Save() error {
 	}
 	defer file.Close()
 
-	b, err := json.Marshal(pw.Package)
-	if err != nil {
-		return err
+	marshaller := &json.Marshaller{
+		EnumsAsString: true,
+		Indent: "  ",
 	}
-
-	var buf bytes.Buffer
-	err = json.Indent(&buf, b, "", "  ")
-	if err != nil {
-		return err
-	}
-
-	_, err = buf.WriteTo(file)
-	return err
+	return marshaller.Marshal(file, pw.Package)
 }
 
 // Remove a package from this package's list of dependencies.
