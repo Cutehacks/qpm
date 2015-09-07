@@ -3,7 +3,7 @@
 	url = https://github.com/bradfitz/http2
 [submodule "src/github.com/golang/protobuf"]
 	path = src/github.com/golang/protobuf
-	url = https://github.com/golang/protobuf
+	url = https://github.com/jrbarron/protobuf.git
 [submodule "src/golang.org/x/net"]
 	path = src/golang.org/x/net
 	url = https://go.googlesource.com/net
