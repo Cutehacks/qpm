@@ -3,6 +3,8 @@
 
 [![Join the chat at https://gitter.im/Cutehacks/qpm](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Cutehacks/qpm?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
+[Roadmap](https://trello.com/b/ofOIyRR0/qpm-roadmap)
+
 # Introduction
 
 > qpm is a command line tool for accessing the qpm.io Qt package registry and installing dependencies.
