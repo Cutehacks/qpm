@@ -21,6 +21,8 @@ It has these top-level messages:
 	DependencyResponse
 	SearchRequest
 	SearchResponse
+	ListRequest
+	ListResponse
 	LoginRequest
 	LoginResponse
 	InfoRequest
@@ -29,6 +31,8 @@ It has these top-level messages:
 package messages
 
 import proto "github.com/golang/protobuf/proto"
+import fmt "fmt"
+import math "math"
 
 import (
 	context "golang.org/x/net/context"
@@ -36,11 +40,9 @@ import (
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConn
-
-// Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
+var _ = fmt.Errorf
+var _ = math.Inf
 
 type RepoType int32
 
@@ -286,6 +288,28 @@ func (m *SearchResponse) GetResults() []*SearchResult {
 	return nil
 }
 
+type ListRequest struct {
+}
+
+func (m *ListRequest) Reset()         { *m = ListRequest{} }
+func (m *ListRequest) String() string { return proto.CompactTextString(m) }
+func (*ListRequest) ProtoMessage()    {}
+
+type ListResponse struct {
+	Results []*SearchResult `protobuf:"bytes,1,rep,name=results" json:"results,omitempty"`
+}
+
+func (m *ListResponse) Reset()         { *m = ListResponse{} }
+func (m *ListResponse) String() string { return proto.CompactTextString(m) }
+func (*ListResponse) ProtoMessage()    {}
+
+func (m *ListResponse) GetResults() []*SearchResult {
+	if m != nil {
+		return m.Results
+	}
+	return nil
+}
+
 type LoginRequest struct {
 	Email    string `protobuf:"bytes,1,opt,name=email" json:"email,omitempty"`
 	Password string `protobuf:"bytes,2,opt,name=password" json:"password,omitempty"`
@@ -348,6 +372,10 @@ func init() {
 	proto.RegisterEnum("messages.LicenseType", LicenseType_name, LicenseType_value)
 }
 
+// Reference imports to suppress errors if they are not otherwise used.
+var _ context.Context
+var _ grpc.ClientConn
+
 // Client API for Qpm service
 
 type QpmClient interface {
@@ -355,6 +383,7 @@ type QpmClient interface {
 	Publish(ctx context.Context, in *PublishRequest, opts ...grpc.CallOption) (*PublishResponse, error)
 	GetDependencies(ctx context.Context, in *DependencyRequest, opts ...grpc.CallOption) (*DependencyResponse, error)
 	Search(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*SearchResponse, error)
+	List(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListResponse, error)
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
 	Info(ctx context.Context, in *InfoRequest, opts ...grpc.CallOption) (*InfoResponse, error)
 }
@@ -403,6 +432,15 @@ func (c *qpmClient) Search(ctx context.Context, in *SearchRequest, opts ...grpc.
 	return out, nil
 }
 
+func (c *qpmClient) List(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListResponse, error) {
+	out := new(ListResponse)
+	err := grpc.Invoke(ctx, "/messages.Qpm/List", in, out, c.cc, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *qpmClient) Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error) {
 	out := new(LoginResponse)
 	err := grpc.Invoke(ctx, "/messages.Qpm/Login", in, out, c.cc, opts...)
@@ -428,6 +466,7 @@ type QpmServer interface {
 	Publish(context.Context, *PublishRequest) (*PublishResponse, error)
 	GetDependencies(context.Context, *DependencyRequest) (*DependencyResponse, error)
 	Search(context.Context, *SearchRequest) (*SearchResponse, error)
+	List(context.Context, *ListRequest) (*ListResponse, error)
 	Login(context.Context, *LoginRequest) (*LoginResponse, error)
 	Info(context.Context, *InfoRequest) (*InfoResponse, error)
 }
@@ -484,6 +523,18 @@ func _Qpm_Search_Handler(srv interface{}, ctx context.Context, codec grpc.Codec,
 	return out, nil
 }
 
+func _Qpm_List_Handler(srv interface{}, ctx context.Context, codec grpc.Codec, buf []byte) (interface{}, error) {
+	in := new(ListRequest)
+	if err := codec.Unmarshal(buf, in); err != nil {
+		return nil, err
+	}
+	out, err := srv.(QpmServer).List(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func _Qpm_Login_Handler(srv interface{}, ctx context.Context, codec grpc.Codec, buf []byte) (interface{}, error) {
 	in := new(LoginRequest)
 	if err := codec.Unmarshal(buf, in); err != nil {
@@ -527,6 +578,10 @@ var _Qpm_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Search",
 			Handler:    _Qpm_Search_Handler,
+		},
+		{
+			MethodName: "List",
+			Handler:    _Qpm_List_Handler,
 		},
 		{
 			MethodName: "Login",

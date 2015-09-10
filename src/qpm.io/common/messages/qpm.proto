@@ -90,6 +90,13 @@ message SearchResponse {
 	repeated SearchResult results = 1;
 }
 
+message ListRequest {
+}
+
+message ListResponse {
+	repeated SearchResult results = 1;
+}
+
 message LoginRequest {
 	string email = 1;
 	string password = 2;
@@ -120,6 +127,8 @@ service Qpm {
 	rpc GetDependencies(DependencyRequest) returns (DependencyResponse) {}
 
 	rpc Search(SearchRequest) returns (SearchResponse) {}
+
+	rpc List(ListRequest) returns (ListResponse) {}
 
 	rpc Login(LoginRequest) returns (LoginResponse) {}
 

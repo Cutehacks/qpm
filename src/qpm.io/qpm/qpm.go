@@ -34,6 +34,7 @@ func main() {
 	registry.RegisterSubCommand("ping", cmd.NewPingCommand(ctx))
 	registry.RegisterSubCommand("init", cmd.NewInitCommand(ctx))
 	registry.RegisterSubCommand("search", cmd.NewSearchCommand(ctx))
+	registry.RegisterSubCommand("list", cmd.NewListCommand(ctx))
 	registry.RegisterSubCommand("info", cmd.NewInfoCommand(ctx))
 	registry.RegisterSubCommand("install", cmd.NewInstallCommand(ctx))
 	registry.RegisterSubCommand("uninstall", cmd.NewUninstallCommand(ctx))
