@@ -5,11 +5,9 @@ package commands
 
 import (
 	"flag"
-	"fmt"
 	"golang.org/x/net/context"
 	msg "qpm.io/common/messages"
 	"qpm.io/qpm/core"
-	"strings"
 )
 
 type SearchCommand struct {
@@ -45,21 +43,7 @@ func (sc *SearchCommand) Run() error {
 	}
 
 	results := response.GetResults()
-
-	if len(results) == 0 {
-		fmt.Printf("No packages found.\n")
-		return nil
-	} else {
-		fmt.Printf("\n%-40s %-20s\n", "Package", "Author")
-		fmt.Printf("%s\n", strings.Repeat("-", 75))
-	}
-
-	for _, r := range results {
-		fmt.Printf("%-40s %s\n",
-			r.Name+"@"+r.Version,
-			r.GetAuthor().Name+" <"+r.GetAuthor().Email+">",
-		)
-	}
+	core.PrintSearchResults(results)
 
 	return nil
 }
