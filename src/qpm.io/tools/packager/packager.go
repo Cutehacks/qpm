@@ -8,12 +8,32 @@ import (
 	"path/filepath"
 	"text/template"
 	"time"
+	"qpm.io/qpm/core"
+	"strings"
 )
 
 const (
 	packageName   = "io.qpm.cli"
 	stagingDir    = "packages"
 	repositoryDir = "repository"
+	qpmLicense    = "artistic-2.0"
+	licenseAddendum = `
+--------------------------
+
+The following additional terms shall apply to use of the qpm software, the qpm.io
+website and repository:
+
+"qpm" and "qpm.io" are owned by Cutehacks AS. All rights reserved.
+
+Modules published on the qpm registry are not officially endorsed by Cutehacks AS.
+
+Data published to the qpm registry is not part of qpm itself, and is the sole
+property of the publisher. While every effort is made to ensure accountability,
+there is absolutely no guarantee, warranty, or assertion expressed or implied
+as to the quality, fitness for a specific purpose, or lack of malice in any
+given qpm package.  Packages downloaded through qpm.io are independently licensed
+and are not covered by this license.
+	`
 )
 
 var (
@@ -25,10 +45,6 @@ var (
 		"darwin_386":    "qpm",
 		"darwin_amd64":  "qpm",
 	}
-
-	licenseTxt = template.Must(template.New("licenseTxt").Parse(`
-qpm is available under the terms of a license.
-	`))
 
 	rootPackageXml = template.Must(template.New("rootPackageXml").Parse(
 		`<?xml version="1.0"?>
@@ -98,6 +114,18 @@ func copyBinary(src, dest string) error {
 	return d.Chmod(0755)
 }
 
+func writeText(filename,  text string) error {
+	file, err := os.Create(filename)
+	if err != nil {
+		log.Fatalf("Could not create file %s: %s", filename, err.Error())
+		return err
+	}
+	defer file.Close()
+
+	_, err = file.WriteString(text)
+	return err
+}
+
 func writeTemplate(filename string, tpl *template.Template, pkg *packageInfo) error {
 	file, err := os.Create(filename)
 	if err != nil {
@@ -129,10 +157,10 @@ func main() {
 		outputDir, err = filepath.Abs(os.Args[1])
 	}
 	if err != nil {
-		log.Fatalf("Error getting output dirr: %v\n", err)
+		log.Fatalf("Error getting output dir: %v\n", err)
 	}
 
-	staging := newDir(outputDir + "/" + stagingDir + "/")
+	staging := newDir(filepath.Join(outputDir, stagingDir))
 	log.Printf("Generated repository at %s\n", outputDir)
 
 	buffer := bytes.NewBufferString(staging)
@@ -144,18 +172,29 @@ func main() {
 		ReleaseDate: time.Now().Format("2006-01-02"),
 	}
 
-	rootMetaDir := newDir(staging + packageName + "/meta/")
-	newDir(staging + packageName + "/data")
+	rootMetaDir := newDir(filepath.Join(staging, packageName, "meta"))
+	newDir(filepath.Join(staging, packageName, "data"))
 
-	if err = writeTemplate(rootMetaDir+"package.xml", rootPackageXml, pkg); err != nil {
+	if err = writeTemplate(filepath.Join(rootMetaDir,"package.xml"), rootPackageXml, pkg); err != nil {
 		log.Fatalf("Could not generate package.xml for root %s", err.Error())
 	}
-	if err = writeTemplate(rootMetaDir+"license.txt", licenseTxt, pkg); err != nil {
+
+	license, err := core.GetLicense(qpmLicense)
+	if err != nil {
+		log.Fatalf("Could not fetch license info:", err.Error())
+	}
+
+	licenseTxt := license.Body
+	licenseTxt = strings.Replace(licenseTxt, "[fullname]", "Cutehacks AS", -1)
+	licenseTxt = strings.Replace(licenseTxt, "[year]", time.Now().Format("2006"), -1)
+	licenseTxt +=  licenseAddendum
+
+	if err = writeText(filepath.Join(rootMetaDir,"license.txt"), licenseTxt); err != nil {
 		log.Fatalf("Could not generate license.txt for root %s", err.Error())
 	}
 
 	for platform, binary := range platforms {
-		srcDir := binDir + "/" + platform + "/"
+		srcDir := filepath.Join(binDir, platform)
 		if _, err := os.Stat(srcDir); err != nil {
 			log.Printf("Platform %s does not exist", platform)
 			continue
@@ -163,7 +202,7 @@ func main() {
 
 		// Create meta dir
 		buffer.Truncate(reset)
-		buffer.WriteString(packageName + ".")
+		buffer.WriteString("/" + packageName + ".")
 		buffer.WriteString(platform)
 		buffer.WriteString("/meta/")
 		metaDir := buffer.String()
@@ -171,18 +210,18 @@ func main() {
 
 		// Create data dir
 		buffer.Truncate(reset)
-		buffer.WriteString(packageName + ".")
+		buffer.WriteString("/" + packageName + ".")
 		buffer.WriteString(platform)
 		buffer.WriteString("/data/qpm/")
 		dataDir := buffer.String()
 		newDir(dataDir)
 
-		if err := copyBinary(srcDir+binary, dataDir+binary); err != nil {
+		if err := copyBinary(filepath.Join(srcDir, binary), filepath.Join(dataDir, binary)); err != nil {
 			log.Fatalf("Cannot copy binary to %s: %s", dataDir, err.Error())
 		}
 
 		pkg.Platform = platform
-		if err := writeTemplate(metaDir+"package.xml", platformPackageXml, pkg); err != nil {
+		if err := writeTemplate(filepath.Join(metaDir, "package.xml"), platformPackageXml, pkg); err != nil {
 			log.Fatalf("Could not generate package.xml for %s: %s", platform, err.Error())
 		}
 	}
