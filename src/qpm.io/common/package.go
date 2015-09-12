@@ -221,6 +221,9 @@ func (pw PackageWrapper) RootDir() string {
 }
 
 func (pw PackageWrapper) PriFile() string {
+	if pw.PriFilename != "" {
+		return pw.PriFilename
+	}
 	return dotUnderscore(pw.Package.Name) + ".pri"
 }
 

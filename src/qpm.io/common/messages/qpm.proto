@@ -38,6 +38,7 @@ message Package {
 	Version version = 5;
 	repeated string dependencies = 6;
 	LicenseType license = 7;
+	string pri_filename = 8;
 }
 
 message Dependency {
