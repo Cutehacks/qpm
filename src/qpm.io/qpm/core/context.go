@@ -16,7 +16,7 @@ const (
 	GitHub        = "https://api.github.com/repos"
 	Tarball       = "tarball"
 	TarSuffix     = ".tar.gz"
-	License       = "LICENSE"
+	LicenseFile   = "LICENSE"
 )
 
 type Context struct {

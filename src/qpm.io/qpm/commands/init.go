@@ -5,12 +5,9 @@ package commands
 
 import (
 	"bufio"
-	"encoding/json"
 	"flag"
 	"fmt"
 	"github.com/howeyc/gopass"
-	"io/ioutil"
-	"net/http"
 	"os"
 	"path/filepath"
 	"qpm.io/common"
@@ -183,35 +180,14 @@ type License struct {
 
 func (ic *InitCommand) license(license string) error {
 
-	url := "https://api.github.com/licenses/" + license
-	client := &http.Client{}
-
-	request, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		return err
-	}
-	request.Header.Set("Accept", "application/vnd.github.drax-preview+json")
-
-	var response *http.Response
-	response, err = client.Do(request)
-	if err != nil {
-		return err
-	}
-	defer response.Body.Close()
-
-	var info License
-	body, err := ioutil.ReadAll(response.Body)
-	err = json.Unmarshal(body, &info)
-	if err != nil {
-		return err
-	}
+	info, err := core.GetLicense(license)
 
 	// FIXME: this is probably tied to the MIT license layout
 	info.Body = strings.Replace(info.Body, "[year]", strconv.Itoa(time.Now().Year()), -1)
 	info.Body = strings.Replace(info.Body, "[fullname]", ic.Pkg.Author.Name, -1)
 
 	var file *os.File
-	file, err = os.Create(core.License)
+	file, err = os.Create(core.LicenseFile)
 	if err != nil {
 		return err
 	}
