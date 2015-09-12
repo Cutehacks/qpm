@@ -48,7 +48,7 @@ func (c *CheckCommand) Run() error {
 	c.pkg.Validate()
 
 	// check the LICENSE file
-	_, err = os.Stat(core.License)
+	_, err = os.Stat(core.LicenseFile)
 	if err != nil {
 		c.Error(err)
 		return err
