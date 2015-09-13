@@ -225,7 +225,7 @@ func (i *InstallCommand) save(newDeps []*common.PackageWrapper) error {
 func (i *InstallCommand) download(url string, destination string) (fileName string, err error) {
 
 	tokens := strings.Split(url, "/")
-	fileName = destination + "/" + tokens[len(tokens)-2] + core.TarSuffix // FIXME: we assume it's a tarball
+	fileName = destination + string(filepath.Separator) + tokens[len(tokens)-2] + core.TarSuffix // FIXME: we assume it's a tarball
 
 	var output *os.File
 	output, err = os.Create(fileName)
@@ -290,11 +290,11 @@ func (i *InstallCommand) extract(fileName string, destination string) (*common.P
 			return nil, err
 		}
 
-		filename := destination + "/" + header.Name
+		filename := destination + string(filepath.Separator) + header.Name
 
 		switch header.Typeflag {
 		case tar.TypeDir:
-			tokens := strings.Split(header.Name, "/")
+			tokens := strings.Split(header.Name, string(filepath.Separator))
 			topDir = tokens[0]
 			err = os.MkdirAll(filename, os.FileMode(header.Mode)) // or use 0755
 			if err != nil {
