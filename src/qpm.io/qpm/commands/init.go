@@ -105,6 +105,12 @@ func (ic *InitCommand) Run() error {
 
 	ic.Pkg.Repository.Url = <-Prompt("Repository:", "")
 
+	filename, _ := ic.findPriFile()
+	if len(filename) == 0 {
+		filename = ic.Pkg.PriFile()
+	}
+	ic.Pkg.PriFilename = <-Prompt("Package .pri file:", filename)
+
 	if err := ic.Pkg.Save(); err != nil {
 		return err
 	}
@@ -199,4 +205,29 @@ func (ic *InitCommand) license(license string) error {
 	}
 
 	return nil
+}
+
+func (ic *InitCommand) findPriFile() (string, error) {
+	dirname := "." + string(filepath.Separator)
+
+	d, err := os.Open(dirname)
+	if err != nil {
+		return "", err
+	}
+	defer d.Close()
+
+	files, err := d.Readdir(-1)
+	if err != nil {
+		return "", err
+	}
+
+	for _, file := range files {
+		if file.Mode().IsRegular() {
+			if filepath.Ext(file.Name()) == ".pri" {
+				return file.Name(), nil
+			}
+		}
+	}
+
+	return "", nil
 }
