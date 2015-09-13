@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"github.com/howeyc/gopass"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"qpm.io/common"
 	"qpm.io/qpm/core"
@@ -85,8 +86,10 @@ func (ic *InitCommand) Run() error {
 
 	ic.Pkg = &common.PackageWrapper{Package: common.NewPackage()}
 
-	// TODO: Check ~/.gitconfig for name/email
-	ic.Pkg.Author.Name = <-Prompt("Your name:", ic.Pkg.Author.Name)
+	ic.Pkg.Author.Name, _ = ic.lastCommitAuthor()
+	ic.Pkg.Author.Name, _ = <-Prompt("Your name:", ic.Pkg.Author.Name)
+
+	ic.Pkg.Author.Email, _ = ic.lastCommitEmail()
 	ic.Pkg.Author.Email = <-Prompt("Your email:", ic.Pkg.Author.Email)
 
 	cwd, err := os.Getwd()
@@ -101,9 +104,10 @@ func (ic *InitCommand) Run() error {
 
 	ic.Pkg.Name = <-Prompt("Unique package name:", suggestedName)
 	ic.Pkg.Version.Label = <-Prompt("Initial version:", ic.Pkg.Version.Label)
-	ic.Pkg.Version.Revision = "XXXXXXXX"
+	ic.Pkg.Version.Revision, _ = ic.lastCommitSHA1()
 
-	ic.Pkg.Repository.Url = <-Prompt("Repository:", "")
+	ic.Pkg.Repository.Url, _ = ic.remoteOriginURL()
+	ic.Pkg.Repository.Url = <-Prompt("Repository:", ic.Pkg.Repository.Url)
 
 	filename, _ := ic.findPriFile()
 	if len(filename) == 0 {
@@ -230,4 +234,42 @@ func (ic *InitCommand) findPriFile() (string, error) {
 	}
 
 	return "", nil
+}
+
+func (ic *InitCommand) lastCommitSHA1() (string, error) {
+	// TODO: refactor this to an interface for all VCSs
+	out, err := exec.Command("git","rev-parse", "HEAD").Output()
+	return strings.TrimSpace(string(out)), err
+}
+
+func (ic *InitCommand) lastCommitAuthor() (string, error) {
+	// TODO: refactor this to an interface for all VCSs
+	args := []string{"log", "-1", "--format=%an"}
+	out, err := exec.Command("git", args...).Output()
+	return strings.TrimSpace(string(out)), err
+}
+
+func (ic *InitCommand) lastCommitEmail() (string, error) {
+	// TODO: refactor this to an interface for all VCSs
+	args := []string{"log", "-1", "--format=%ae"}
+	out, err := exec.Command("git", args...).Output()
+	return strings.TrimSpace(string(out)), err
+}
+
+func (ic *InitCommand) remoteOriginURL() (string, error) {
+	// TODO: refactor this to an interface for all VCSs and hosts
+	out, err := exec.Command("git", "config", "remote.origin.url").Output()
+	fmt.Println(string(out))
+	fmt.Println(err)
+	if err != nil {
+		return "", err
+	}
+	// FIXME: we require the URL to be https:// and assume the GitHub API when downloading tarballs
+	str := strings.TrimSpace(string(out))
+	if strings.HasPrefix(str, "git@") {
+		str = strings.Replace(str, ":", "/", -1)
+		str = strings.Replace(str, "git@", "https://", -1)
+		str = strings.TrimSuffix(str, ".git")
+	}''
+	return str, nil
 }
