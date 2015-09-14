@@ -18,6 +18,7 @@ import (
 	"qpm.io/qpm/core"
 	"strings"
 	"text/template"
+	"encoding/json"
 )
 
 var packageFuncs = template.FuncMap{
@@ -243,6 +244,22 @@ func (i *InstallCommand) download(url string, destination string) (fileName stri
 		return
 	}
 	defer response.Body.Close()
+
+	if response.StatusCode >= 400 {
+		errResp := make(map[string]string)
+		dec := json.NewDecoder(response.Body)
+		if err = dec.Decode(&errResp); err != nil {
+			i.Error(err)
+			return
+		}
+		errMsg, ok := errResp["message"]
+		if !ok {
+			errMsg = response.Status
+		}
+		err = fmt.Errorf("Error fetching %s: %s", url, errMsg)
+		i.Error(err)
+		return
+	}
 
 	//proxy := &ProgressProxyReader{ Reader: response.Body, length: response.ContentLength }
 	//var written int64
