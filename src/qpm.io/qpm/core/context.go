@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	msg "qpm.io/common/messages"
+	"google.golang.org/grpc/credentials"
 )
 
 const (
@@ -27,7 +28,8 @@ type Context struct {
 func NewContext() *Context {
 	log := log.New(os.Stderr, "QPM: ", log.LstdFlags)
 
-	conn, err := grpc.Dial(Address)
+	creds := credentials.NewClientTLSFromCert(nil, "")
+	conn, err := grpc.Dial(Address, grpc.WithTransportCredentials(creds))
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
