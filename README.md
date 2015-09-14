@@ -12,6 +12,22 @@
 qpm and the corresponding qpm.io service provide a way for Qt developers to search, install and
 publish source code (QML, JS, C++) components that can be compiled into Qt applications or libraries.
 
+# Content
+
+* [Goals](#goals)
+* [How it works](#how-it-works)
+* [Installing] ()
+  * [Download a binary](#download-a-binary)
+  * [Use Qt's Maintenance Tool](#use-qts-maintenance-tool)
+  * [Compile from source](#compile-from-source)
+* [Usage for App Developers](#usage-for-app-developers)
+* [Usage for Package Authors](#usage-for-package-authors)
+  * [A note on versioning](#a-note-on-versioning)
+* [Contributing](#contributing)
+  * [Prerequisites](#prerequisites)
+  * [Generating Protocol Buffers](#generating-protocol-buffers)
+* [FAQ](#faq)
+
 ## Goals
 
 qpm aims to:
