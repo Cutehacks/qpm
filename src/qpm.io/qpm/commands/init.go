@@ -104,7 +104,8 @@ func (ic *InitCommand) Run() error {
 
 	ic.Pkg.Name = <-Prompt("Unique package name:", suggestedName)
 	ic.Pkg.Version.Label = <-Prompt("Initial version:", ic.Pkg.Version.Label)
-	ic.Pkg.Version.Revision, _ = ic.lastCommitSHA1()
+	//ic.Pkg.Version.Revision, _ = ic.lastCommitSHA1()
+	ic.Pkg.Version.Revision = "<insert SHA1 or tag>"
 
 	ic.Pkg.Repository.Url, _ = ic.remoteOriginURL()
 	ic.Pkg.Repository.Url = <-Prompt("Repository:", ic.Pkg.Repository.Url)
@@ -270,6 +271,6 @@ func (ic *InitCommand) remoteOriginURL() (string, error) {
 		str = strings.Replace(str, ":", "/", -1)
 		str = strings.Replace(str, "git@", "https://", -1)
 		str = strings.TrimSuffix(str, ".git")
-	}''
+	}
 	return str, nil
 }
