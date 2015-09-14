@@ -46,7 +46,7 @@ func (v * VerifyCommand) Run() error {
 	var path string
 	if v.fs.NArg() > 0 {
 		packageName := v.fs.Arg(0)
-		path = core.Vendor + "/" + strings.Replace(packageName, ".", "/", -1)
+		path = filepath.Join(core.Vendor, strings.Replace(packageName, ".", string(filepath.Separator), -1))
 	} else {
 		path = "."
 	}

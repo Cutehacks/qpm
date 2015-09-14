@@ -12,6 +12,7 @@ import (
 	"bytes"
 	"strings"
 	"sort"
+	"path/filepath"
 	"crypto/sha256"
 	"encoding/hex"
 	"golang.org/x/crypto/openpgp"
@@ -204,7 +205,7 @@ func entityFromLocal(fileName string, fingerprint string) (*openpgp.Entity, erro
 		return nil, fmt.Errorf("cound not find GNUPGHOME in ENV")
 	}
 
-	file, err := os.Open(path + "/" + fileName)
+	file, err := os.Open(filepath.Join(path, fileName))
 	if err != nil {
 		return nil, err
 	}
