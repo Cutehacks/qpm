@@ -36,13 +36,13 @@ An application developer installs a package that he or she wishes to use and qpm
 code for that package and also fetch any *nested* dependencies that the package has. The application
 developer can then use those package dependencies in their application.
 
-A package in qpm terms consists of a `package.json` file which contains meta data about the package
+A package in qpm terms consists of a `qpm.json` file which contains meta data about the package
 such as the name, maintainer, version, dependencies, etc. The name of the package must be unique as
 it is used later to avoid naming collisions.
 
 When an application developer installs a package for use in a Qt app, qpm will automatically create a
-package.json file to track the apps dependencies. Even though apps contain package.json files, they
-should not be published to the registry. The package.json file should be checked into your version
+qpm.json file to track the apps dependencies. Even though apps contain qpm.json files, they
+should not be published to the registry. The qpm.json file should be checked into your version
 control system so that the dependencies can be re-created later. Upon installing a package dependency, 
 the qpm tool will create a directory called `vendor` which contains the source code of the package.
 This is included in the application (see below) and can used as normal.
@@ -147,9 +147,9 @@ version using the following syntax:
 qpm install package@1.0.1
 ```
 
-Installing a package for the first time will create a new file called `package.json`. Subsequent
+Installing a package for the first time will create a new file called `qpm.json`. Subsequent
 installs will update this file with the new package. If you want to install all of the packages
-listed in your `package.json` file, then you use:
+listed in your `qpm.json` file, then you use:
 
 ```
 qpm install
@@ -198,7 +198,7 @@ qpm can help you get started by running the following interactive command:
 qpm init
 ```
 
-This asks some basic questions to get you going and to generate a package.json file containing your
+This asks some basic questions to get you going and to generate a qpm.json file containing your
 package's meta data. If you are starting from scratch, you can let the `init` command generate some
 boilerplate code for you. This generates some basic files that you can extend as you create your
 module. The boilerplate currently generated is:
@@ -242,7 +242,7 @@ revision though. This is to handle the case where, for example, a release candid
 identical to the final release (1.0.0).
 
 Publishing a new version of a package, is simply a matter of modifying the respective fields in the
-package.json file and running `qpm publish`. The meta data for a package is not versioned, so
+qpm.json file and running `qpm publish`. The meta data for a package is not versioned, so
 changing the description or author will affect all versions of a package. Nested dependencies for a
 package **are** versioned so publishing a new version with new dependencies will not affect previous
 versions.
