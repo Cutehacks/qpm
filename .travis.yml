@@ -19,8 +19,7 @@ deploy:
   secret_access_key:
     secure: HtrM7Cauk8TNt92G2b/CIEUtJRsR/rHyEwdRzsFlmC1NnBE9lZ2dWCKo/nm6f4wcBpMNdvWVav5bWJn2JeTBzkFw3HhLNpBtc973TJaJAbIIGj9xAjlKOcNNRIg4FqZRGOrsGHtuisqJ1F/7hoUH8m2WufW95A+3y0UsOlyOx0N4KfGo54fVMKGpcOYj0zrKxz+Roam79S12L8pELnA+rpwlEzaePPqiz8CVn1u6hDsTCJTgI2Q0p3xGN1jMrei3H8aEVU/5TPAKIIyfprghqCYHMxwZnWEyDQ/88PxnhqOZ91pigA3g0xQtMUKokLqLboGFDjdWjqzUHWnAlGS9e3FiPdQrhbYHNWlRSV1/hxdgxwTvHMiaAbCPEUuZGL8WpFuZ0T7qaTuYVxxJzGKnD/AiCNEPx37XvbUYEhqbXX2NzO3cXY7pAI7wj4slCuug/MKoOQbL01JsqU4DiSUukCr7xzcH8Aj7O0ZlNeFG/3BAjvrUR9+vSyGGYe4bKIQ/IC7xicFFJM1YDshx2lSG2TVfmxm8Dg4XgdKKr3l5ji/M9prQiNW1Uxx17QaWmLI35+pZeVEUy85+gWPNP+1Be7s43V3fWwqdzhzPdzBV8RE+1vA+C70nXmwpftz2ycxnzC7GdfoHnzUPolSm147J0OjywkmzPeaVjfLEfofB49A=
   bucket: www.qpm.io
-  local-dir: /home/travis/gopath/src/github.com/Cutehacks/qpm/bin/
-  upload-dir: download/latest
+  upload-dir: test
   acl: public-read
   on:
     repo: Cutehacks/qpm
