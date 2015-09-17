@@ -166,7 +166,7 @@ func (i *InstallCommand) Run() error {
 		return err
 	}
 
-	err = i.postInstall(packages)
+	err = i.postInstall()
 	// FIXME: should we continue installing ?
 	if err != nil {
 		return err
@@ -366,20 +366,14 @@ func (i *InstallCommand) extract(fileName string, destination string) (*common.P
 			return pkg, err
 		}
 
-		// Reload it from the new location
-		pkg, err = common.LoadPackage(path)
-		if err != nil {
-			i.Error(err)
-		}
-
 		return pkg, err
 	}
 
 	return nil, nil
 }
 
-func (i *InstallCommand) postInstall(dependencies []*common.PackageWrapper) error {
-	if err := GenerateVendorPri(i.vendorDir, i.pkg, dependencies); err != nil {
+func (i *InstallCommand) postInstall() error {
+	if err := GenerateVendorPri(i.vendorDir, i.pkg); err != nil {
 		i.Error(err)
 		return err
 	}
@@ -388,7 +382,16 @@ func (i *InstallCommand) postInstall(dependencies []*common.PackageWrapper) erro
 
 // Generates a vendor.pri inside vendorDir using the information contained in the package file
 // and the dependencies
-func GenerateVendorPri(vendorDir string, pkg *common.PackageWrapper, deps []*common.PackageWrapper) error {
+func GenerateVendorPri(vendorDir string, pkg *common.PackageWrapper) error {
+	depMap, err := common.LoadPackages(vendorDir)
+	if err != nil {
+		return err
+	}
+
+	var deps []*common.PackageWrapper
+	for _, dep := range depMap {
+		deps = append(deps, dep)
+	}
 
 	vendorPriFile := filepath.Join(vendorDir, core.Vendor+".pri")
 

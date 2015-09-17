@@ -76,17 +76,6 @@ func (u *UninstallCommand) Run() error {
 		}
 	}
 
-	var deps []*common.PackageWrapper
-	for _, dep := range dependencyMap {
-		deps = append(deps, dep)
-	}
-
-	// Regenerate vendor.pri
-	if err := GenerateVendorPri(u.vendorDir, pkg, deps); err != nil {
-		u.Error(err)
-		return err
-	}
-
 	fmt.Println("Uninstalling", toRemove.Name)
 
 	// Final step is to delete the dependency's directory. This should
@@ -98,6 +87,12 @@ func (u *UninstallCommand) Run() error {
 	}
 
 	// TODO: Cleanup empty leaf directories in parent dirs
+
+	// Regenerate vendor.pri
+	if err := GenerateVendorPri(u.vendorDir, pkg); err != nil {
+		u.Error(err)
+		return err
+	}
 
 	return nil
 }
