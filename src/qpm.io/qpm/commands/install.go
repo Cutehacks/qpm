@@ -34,13 +34,14 @@ var packageFuncs = template.FuncMap{
 }
 
 var (
+	// This template is very dense to avoid excessive whitespace in the generated code.
+	// We can address this in a future version of Go (1.6?):
+	// https://github.com/golang/go/commit/e6ee26a03b79d0e8b658463bdb29349ca68e1460
 	vendorPri = template.Must(template.New("vendorPri").Funcs(packageFuncs).Parse(`
 DEFINES += QPM_INIT\\(E\\)=\"E.addImportPath(QStringLiteral(\\\"qrc:/\\\"));\"
-
 {{$vendirDir := .VendorDir}}
 {{range $dep := .Dependencies}}
-include($$PWD/{{relPriFile $vendirDir $dep}})
-{{end}}
+include($$PWD/{{relPriFile $vendirDir $dep}}){{end}}
 `))
 )
 
