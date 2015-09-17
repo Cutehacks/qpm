@@ -9,6 +9,8 @@ import (
 	"strings"
 	"net/http"
 	"encoding/json"
+	"text/template"
+	"os"
 )
 
 // Pretty prints a table of package SearchResults.
@@ -59,3 +61,22 @@ func GetLicense(license string) (License, error) {
 	err = dec.Decode(&licenseInfo);
 	return licenseInfo, err
 }
+
+// Renders the given template using the fields contained in the data parameter and
+// outputs the result to the given file. If the file already exists, it will be
+// overwritten.
+func WriteTemplate(filename string, tpl *template.Template, data interface{}) error {
+	file, err := os.Create(filename)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	err = tpl.Execute(file, data)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+

@@ -122,7 +122,9 @@ func (ic *InitCommand) Run() error {
 
 	bootstrap := <-Prompt("Generate boilerplate:", "Y/n")
 	if len(bootstrap) == 0 || strings.ToLower(string(bootstrap[0])) == "y" {
-		ic.GenerateBoilerplate()
+		if err := ic.GenerateBoilerplate(); err != nil {
+			return err
+		}
 		ic.license("mit") // FIXME: add support for more licenses
 	}
 	return nil
@@ -145,24 +147,7 @@ module {{.Package.Name}}
 `))
 )
 
-func (ic InitCommand) WriteBoilerPlate(filename string, tpl *template.Template, data interface{}) error {
-	file, err := os.Create(filename)
-	if err != nil {
-		ic.Error(err)
-		return err
-	}
-	defer file.Close()
-
-	err = tpl.Execute(file, data)
-	if err != nil {
-		ic.Error(err)
-		return err
-	}
-
-	return nil
-}
-
-func (ic InitCommand) GenerateBoilerplate() {
+func (ic InitCommand) GenerateBoilerplate() error {
 
 	module := struct {
 		Package   *common.PackageWrapper
@@ -176,9 +161,16 @@ func (ic InitCommand) GenerateBoilerplate() {
 		QrcPrefix: ic.Pkg.QrcPrefix(),
 	}
 
-	ic.WriteBoilerPlate(module.PriFile, modulePri, module)
-	ic.WriteBoilerPlate(module.QrcFile, moduleQrc, module)
-	ic.WriteBoilerPlate("qmldir", qmldir, module)
+	if err := core.WriteTemplate(module.PriFile, modulePri, module); err != nil {
+		return err
+	}
+	if err := core.WriteTemplate(module.QrcFile, moduleQrc, module); err != nil {
+		return err
+	}
+	if err := core.WriteTemplate("qmldir", qmldir, module); err != nil {
+		return err
+	}
+	return nil
 }
 
 type License struct {

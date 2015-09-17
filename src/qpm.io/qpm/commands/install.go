@@ -391,17 +391,6 @@ func GenerateVendorPri(vendorDir string, pkg *common.PackageWrapper, deps []*com
 
 	vendorPriFile := filepath.Join(vendorDir, core.Vendor+".pri")
 
-	var file *os.File
-	var err error
-
-	// re-create the .pri file
-	file, err = os.Create(vendorPriFile)
-
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
 	data := struct {
 		VendorDir    string
 		Package      *common.PackageWrapper
@@ -412,9 +401,5 @@ func GenerateVendorPri(vendorDir string, pkg *common.PackageWrapper, deps []*com
 		deps,
 	}
 
-	if err := vendorPri.Execute(file, data); err != nil {
-		return err
-	}
-
-	return nil
+	return core.WriteTemplate(vendorPriFile, vendorPri, data)
 }
