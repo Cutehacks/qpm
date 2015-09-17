@@ -23,6 +23,7 @@ publish source code (QML, JS, C++) components that can be compiled into Qt appli
 * [Usage for App Developers](#usage-for-app-developers)
 * [Usage for Package Authors](#usage-for-package-authors)
   * [Example Package](#example-package)
+  * [Package Naming](#package-naming)
   * [A note on versioning](#a-note-on-versioning)
 * [Contributing](#contributing)
   * [Prerequisites](#prerequisites)
@@ -252,6 +253,20 @@ have several contributors that can publish the same package.
 There is as example package which can be used as a template here:
 
 https://github.com/Cutehacks/qpm-example
+
+## Package Naming
+
+Due to the nature of qpm and the way it compiles everything into the same compilation unit, we
+strongly recommend (enforce in fact) that packages be namespaced at several levels. The package
+name itself should use the same reverse DNS naming scheme that is used by Java (io.qpm.example).
+This is done to avoid popular package names (eg: components) being used exclusively by a single
+person or company. 
+
+Package names should not include superfluous information such as "qt" or "qml". In the context
+of qpm, it is understood that a package is specific to Qt or QML so there is no need to state
+this explicitly. Note that the repository name can be completely independent of the package name.
+In that context, it most certainly can make sense to use "qt" or "qml" to differentiate the
+repository.
 
 ## A note on versioning
 
