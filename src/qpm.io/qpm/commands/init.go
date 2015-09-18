@@ -105,7 +105,7 @@ func (ic *InitCommand) Run() error {
 	ic.Pkg.Name = <-Prompt("Unique package name:", suggestedName)
 	ic.Pkg.Version.Label = <-Prompt("Initial version:", ic.Pkg.Version.Label)
 
-	ic.Pkg.Repository.Url, err = vcs.RepositoryURL()
+	ic.Pkg.Repository.Url, err = vcs.RepositorySubURL()
 	if err != nil {
 		ic.Error(err)
 		return err
