@@ -76,6 +76,14 @@ func RepositoryFileList() ([]string, error) {
 	return paths, nil
 }
 
+func Tag(name string) error {
+	_, err := exec.Command("git", "tag", name).Output()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func Install(dependency *msg.Dependency, destination string) (*common.PackageWrapper, error) {
 	fileName, err := download(dependency, destination)
 	if err != nil {

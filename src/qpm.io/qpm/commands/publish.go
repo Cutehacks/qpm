@@ -123,6 +123,11 @@ func (p *PublishCommand) Run() error {
 		p.Fatal("ERROR:" + err.Error())
 	}
 
+	tag := <-Prompt("Tag release:", "Y/n")
+	if len(tag) == 0 || strings.ToLower(string(tag[0])) == "y" {
+		vcs.Tag("qpm/" + wrapper.Version.Label)
+	}
+
 	fmt.Println("SUCCESS!")
 	signature := strings.Join([]string{wrapper.Name, wrapper.Version.Label}, "@")
 	fmt.Println("Publised package: " + signature)
