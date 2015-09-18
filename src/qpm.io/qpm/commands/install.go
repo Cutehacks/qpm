@@ -179,6 +179,7 @@ func (i *InstallCommand) install(d *msg.Dependency) (*common.PackageWrapper, err
 
 	pkg, err := vcs.Install(d, i.vendorDir)
 	if err != nil {
+		i.Error(err)
 		return nil, err
 	}
 

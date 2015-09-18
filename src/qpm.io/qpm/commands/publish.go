@@ -6,12 +6,14 @@ package commands
 import (
 	"flag"
 	"fmt"
+	"strings"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"qpm.io/common"
 	msg "qpm.io/common/messages"
 	"qpm.io/qpm/core"
+	"qpm.io/qpm/vcs"
 )
 
 type PublishCommand struct {
@@ -106,6 +108,12 @@ func (p *PublishCommand) Run() error {
 		p.Fatal("Cannot read " + core.PackageFile + ": " + err.Error())
 	}
 
+	wrapper.Version.Revision, err = vcs.LastCommitSHA1()
+
+	if err != nil {
+		p.Fatal("Cannot get the last commit SHA1: " + err.Error())
+	}
+
 	_, err = p.Ctx.Client.Publish(context.Background(), &msg.PublishRequest{
 		Token:              token,
 		PackageDescription: wrapper.Package,
@@ -114,6 +122,11 @@ func (p *PublishCommand) Run() error {
 	if err != nil {
 		p.Fatal("ERROR:" + err.Error())
 	}
+
+	fmt.Println("SUCCESS!")
+	signature := strings.Join([]string{wrapper.Name, wrapper.Version.Label}, "@")
+	fmt.Println("Publised package: " + signature)
+	fmt.Println("Revision: " + wrapper.Version.Revision)
 
 	return nil
 }

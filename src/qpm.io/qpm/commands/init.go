@@ -104,10 +104,12 @@ func (ic *InitCommand) Run() error {
 
 	ic.Pkg.Name = <-Prompt("Unique package name:", suggestedName)
 	ic.Pkg.Version.Label = <-Prompt("Initial version:", ic.Pkg.Version.Label)
-	//ic.Pkg.Version.Revision, _ = ic.lastCommitSHA1()
-	//ic.Pkg.Version.Revision = "<insert SHA1 or tag>"
 
-	ic.Pkg.Repository.Url, _ = vcs.RepositoryURL()
+	ic.Pkg.Repository.Url, err = vcs.RepositoryURL()
+	if err != nil {
+		ic.Error(err)
+		return err
+	}
 	ic.Pkg.Repository.Url = <-Prompt("Repository:", ic.Pkg.Repository.Url)
 
 	filename, _ := ic.findPriFile()
@@ -117,6 +119,7 @@ func (ic *InitCommand) Run() error {
 	ic.Pkg.PriFilename = <-Prompt("Package .pri file:", filename)
 
 	if err := ic.Pkg.Save(); err != nil {
+		ic.Error(err)
 		return err
 	}
 

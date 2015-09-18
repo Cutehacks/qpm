@@ -47,8 +47,6 @@ func LastCommitEmail() (string, error) {
 func RepositoryURL() (string, error) {
 	// TODO: refactor this to an interface for all VCSs and hosts
 	out, err := exec.Command("git", "config", "remote.origin.url").Output()
-	fmt.Println(string(out))
-	fmt.Println(err)
 	if err != nil {
 		return "", err
 	}
