@@ -16,6 +16,7 @@ import (
 	"archive/tar"
 	"qpm.io/common"
 	msg "qpm.io/common/messages"
+	"bufio"
 )
 
 const (
@@ -86,6 +87,51 @@ func Tag(name string) error {
 		return err
 	}
 	return nil
+}
+
+// Validate that the given commit has been published to the origin repository.
+func ValidateCommit(commit string) error {
+
+	// First run 'git ls-remote' to get the HEADs of all published remotes
+	lsRemote := exec.Command("git", "ls-remote")
+	stdout, err := lsRemote.StdoutPipe()
+	if err != nil {
+		return err
+	}
+
+	if err := lsRemote.Start(); err != nil {
+		return err
+	}
+
+	remotes := make(map[string]string)
+	scanner := bufio.NewScanner(stdout)
+	scanner.Split(bufio.ScanWords)
+	for scanner.Scan() {
+		sha1 := scanner.Text()
+		if !scanner.Scan() {
+			break
+		}
+		remote := scanner.Text()
+		remotes[remote] = sha1
+	}
+
+	if err := lsRemote.Wait(); err != nil {
+		return err
+	}
+
+	// Check if commit is an ancestor of a published remote
+	for _, s := range remotes {
+		err = exec.Command("git" ,"merge-base", "--is-ancestor", commit, s).Run()
+		if err == nil {
+			return nil
+		}
+	}
+
+	if err != nil {
+		err = fmt.Errorf("Commit %s has not been pushed yet.", commit[:8])
+	}
+
+	return err
 }
 
 func Install(dependency *msg.Dependency, destination string) (*common.PackageWrapper, error) {

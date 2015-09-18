@@ -101,7 +101,6 @@ func (p *PublishCommand) Run() error {
 		p.Fatal(err.Error())
 	}
 
-	fmt.Println("Publishing")
 	wrapper, err := common.LoadPackage("")
 
 	if err != nil {
@@ -114,6 +113,11 @@ func (p *PublishCommand) Run() error {
 		p.Fatal("Cannot get the last commit SHA1: " + err.Error())
 	}
 
+	if err := vcs.ValidateCommit(wrapper.Version.Revision); err != nil {
+		p.Fatal(err.Error())
+	}
+
+	fmt.Println("Publishing")
 	_, err = p.Ctx.Client.Publish(context.Background(), &msg.PublishRequest{
 		Token:              token,
 		PackageDescription: wrapper.Package,
