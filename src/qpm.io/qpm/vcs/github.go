@@ -44,18 +44,22 @@ func LastCommitEmail() (string, error) {
 	return strings.TrimSpace(string(out)), err
 }
 
-func RepositoryURL() (string, error) {
+func RepositorySubURL() (string, error) {
 	// TODO: refactor this to an interface for all VCSs and hosts
 	out, err := exec.Command("git", "config", "remote.origin.url").Output()
 	if err != nil {
 		return "", err
 	}
-	// FIXME: we require the URL to be https:// and assume the GitHub API when downloading tarballs
+
+	// assumes github
 	str := strings.TrimSpace(string(out))
-	if strings.HasPrefix(str, "git@") {
-		str = strings.Replace(str, ":", "/", -1)
-		str = strings.Replace(str, "git@", "https://", -1)
+	if strings.HasPrefix(str, "git@github.com:") {
+		str = strings.TrimPrefix(str, "git@github.com:")
 		str = strings.TrimSuffix(str, ".git")
+	} else if strings.HasPrefix(str, "https://github.com/") {
+		str = strings.TrimPrefix(str, "https://github.com/")
+	} else {
+		return "", err
 	}
 	return str, nil
 }
@@ -100,7 +104,7 @@ func Install(dependency *msg.Dependency, destination string) (*common.PackageWra
 
 func download(dependency *msg.Dependency, destination string) (fileName string, err error) {
 
-	url := GitHubURL + "/" + dependency.Repository.Url + "/" + Tarball
+	url := GitHubURL + "/" + dependency.Repository.Url + "/" + Tarball + "/" + dependency.Version.Revision
 	tokens := strings.Split(url, "/")
 	fileName = destination + string(filepath.Separator) + tokens[len(tokens)-2] + TarSuffix // FIXME: we assume it's a tarball
 
