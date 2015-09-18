@@ -4,21 +4,18 @@
 package commands
 
 import (
-	"archive/tar"
-	"compress/gzip"
 	"flag"
 	"fmt"
 	"golang.org/x/net/context"
 	"io"
-	"net/http"
 	"os"
 	"path/filepath"
 	"qpm.io/common"
 	msg "qpm.io/common/messages"
 	"qpm.io/qpm/core"
+	"qpm.io/qpm/vcs"
 	"strings"
 	"text/template"
-	"encoding/json"
 )
 
 var packageFuncs = template.FuncMap{
@@ -177,22 +174,15 @@ func (i *InstallCommand) Run() error {
 
 func (i *InstallCommand) install(d *msg.Dependency) (*common.PackageWrapper, error) {
 
-	url := core.GitHub + "/" + d.Repository.Url + "/" + core.Tarball
-
 	signature := strings.Join([]string{d.Name, d.Version.Label}, "@")
 	fmt.Println("Installing", signature)
 
-	fileName, err := i.download(url, i.vendorDir)
+	pkg, err := vcs.Install(d, i.vendorDir)
 	if err != nil {
 		return nil, err
 	}
 
-	pkg, err := i.extract(fileName, i.vendorDir)
-	if err != nil {
-		return nil, err
-	}
-
-	return pkg, os.Remove(fileName)
+	return pkg, nil
 }
 
 func (i *InstallCommand) save(newDeps []*common.PackageWrapper) error {
@@ -222,154 +212,6 @@ func (i *InstallCommand) save(newDeps []*common.PackageWrapper) error {
 	}
 
 	return nil
-}
-
-func (i *InstallCommand) download(url string, destination string) (fileName string, err error) {
-
-	tokens := strings.Split(url, "/")
-	fileName = destination + string(filepath.Separator) + tokens[len(tokens)-2] + core.TarSuffix // FIXME: we assume it's a tarball
-
-	var output *os.File
-	output, err = os.Create(fileName)
-	if err != nil {
-		// TODO: check file existence first with os.IsExist(err)
-		i.Error(err)
-		return
-	}
-	defer output.Close()
-
-	var response *http.Response
-	response, err = http.Get(url)
-	if err != nil {
-		i.Error(err)
-		return
-	}
-	defer response.Body.Close()
-
-	if response.StatusCode >= 400 {
-		errResp := make(map[string]string)
-		dec := json.NewDecoder(response.Body)
-		if err = dec.Decode(&errResp); err != nil {
-			i.Error(err)
-			return
-		}
-		errMsg, ok := errResp["message"]
-		if !ok {
-			errMsg = response.Status
-		}
-		err = fmt.Errorf("Error fetching %s: %s", url, errMsg)
-		i.Error(err)
-		return
-	}
-
-	//proxy := &ProgressProxyReader{ Reader: response.Body, length: response.ContentLength }
-	//var written int64
-	_, err = io.Copy(output, response.Body)
-	if err != nil {
-		i.Error(err)
-		return
-	}
-
-	return
-}
-
-func (i *InstallCommand) extract(fileName string, destination string) (*common.PackageWrapper, error) {
-
-	file, err := os.Open(fileName)
-
-	if err != nil {
-		i.Error(err)
-		return nil, err
-	}
-
-	defer file.Close()
-
-	var fileReader io.ReadCloser = file
-
-	// add a filter to handle gzipped file
-	if strings.HasSuffix(fileName, ".gz") {
-		if fileReader, err = gzip.NewReader(file); err != nil {
-			i.Error(err)
-			return nil, err
-		}
-		defer fileReader.Close()
-	}
-
-	tarBallReader := tar.NewReader(fileReader)
-	var topDir string
-
-	for {
-		header, err := tarBallReader.Next()
-		if err != nil {
-			if err == io.EOF {
-				break
-			}
-			i.Error(err)
-			return nil, err
-		}
-
-		filename := destination + string(filepath.Separator) + header.Name
-
-		switch header.Typeflag {
-		case tar.TypeDir:
-			tokens := strings.Split(header.Name, string(filepath.Separator))
-			topDir = tokens[0]
-			err = os.MkdirAll(filename, os.FileMode(header.Mode)) // or use 0755
-			if err != nil {
-				i.Error(err)
-				return nil, err
-			}
-
-		case tar.TypeReg:
-			writer, err := os.Create(filename)
-			if err != nil {
-				i.Error(err)
-				return nil, err
-			}
-			io.Copy(writer, tarBallReader)
-			err = os.Chmod(filename, os.FileMode(header.Mode))
-			if err != nil {
-				i.Error(err)
-				return nil, err
-			}
-			writer.Close()
-
-		case tar.TypeXGlobalHeader:
-			// Ignore this
-
-		default:
-			//i.Info("Unable to extract type : %c in file %s\n", header.Typeflag, filename)
-		}
-	}
-
-	if topDir != "" {
-
-		src := filepath.Join(destination, topDir)
-
-		pkg, err := common.LoadPackage(src)
-		if err != nil {
-			i.Error(err)
-			return pkg, err
-		}
-
-		path := filepath.Join(destination, pkg.QrcPrefix())
-
-		if err := os.MkdirAll(path, 0755); err != nil {
-			i.Error(err)
-			return pkg, err
-		}
-
-		os.RemoveAll(path)
-
-		if err = os.Rename(src, path); err != nil {
-			i.Error(err)
-			return pkg, err
-		}
-
-		return pkg, err
-	}
-
-	return nil, nil
 }
 
 func (i *InstallCommand) postInstall() error {

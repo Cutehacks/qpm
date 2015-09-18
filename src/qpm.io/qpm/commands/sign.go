@@ -8,7 +8,6 @@ import (
 	"flag"
 	"io"
 	"os"
-	"os/exec"
 	"bytes"
 	"strings"
 	"sort"
@@ -19,6 +18,7 @@ import (
 	"golang.org/x/crypto/openpgp/packet"
 	"qpm.io/qpm/core"
 	"qpm.io/common"
+	"qpm.io/qpm/vcs"
 )
 
 type SignCommand struct {
@@ -173,15 +173,10 @@ func HashPaths(paths []string) (string, error) {
 
 func hashRepo() (string, error) {
 
-	// TODO: refactor this to an interface for all VCSs
-	out, err := exec.Command("git","ls-files").Output()
+	paths, err := vcs.RepositoryFileList()
 	if err != nil {
 		return "", err
 	}
-
-	// TODO: this may not work on Windows - we need to test this
-	output := string(out)
-	paths := strings.Split(strings.Trim(output, "\n"), "\n")
 
 	return HashPaths(paths)
 }

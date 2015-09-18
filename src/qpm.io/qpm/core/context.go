@@ -14,9 +14,6 @@ const (
 	SignatureFile = "qpm.asc"
 	Vendor        = "vendor"
 	Address       = "pkg.qpm.io:7000"
-	GitHub        = "https://api.github.com/repos"
-	Tarball       = "tarball"
-	TarSuffix     = ".tar.gz"
 	LicenseFile   = "LICENSE"
 )
 
