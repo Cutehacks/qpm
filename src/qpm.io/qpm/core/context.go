@@ -26,7 +26,11 @@ func NewContext() *Context {
 	log := log.New(os.Stderr, "QPM: ", log.LstdFlags)
 
 	creds := credentials.NewClientTLSFromCert(nil, "")
-	conn, err := grpc.Dial(Address, grpc.WithTransportCredentials(creds))
+	address := os.Getenv("SERVER")
+	if address == "" {
+		address = Address
+	}
+	conn, err := grpc.Dial(address, grpc.WithTransportCredentials(creds))
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
