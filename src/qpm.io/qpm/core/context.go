@@ -6,6 +6,8 @@ import (
 	"os"
 	msg "qpm.io/common/messages"
 	"google.golang.org/grpc/credentials"
+	"fmt"
+	"runtime"
 )
 
 const (
@@ -16,6 +18,8 @@ const (
 	Address       = "pkg.qpm.io:7000"
 	LicenseFile   = "LICENSE"
 )
+
+var UA = fmt.Sprintf("qpm/%v (%s; %s)", Version, runtime.GOOS, runtime.GOARCH)
 
 type Context struct {
 	Log    *log.Logger
@@ -30,7 +34,7 @@ func NewContext() *Context {
 	if address == "" {
 		address = Address
 	}
-	conn, err := grpc.Dial(address, grpc.WithTransportCredentials(creds))
+	conn, err := grpc.Dial(address, grpc.WithTransportCredentials(creds), grpc.WithUserAgent(UA))
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
