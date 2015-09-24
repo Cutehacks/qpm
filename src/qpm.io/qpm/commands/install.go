@@ -36,6 +36,7 @@ var (
 	// https://github.com/golang/go/commit/e6ee26a03b79d0e8b658463bdb29349ca68e1460
 	vendorPri = template.Must(template.New("vendorPri").Funcs(packageFuncs).Parse(`
 DEFINES += QPM_INIT\\(E\\)=\"E.addImportPath(QStringLiteral(\\\"qrc:/\\\"));\"
+DEFINES += QPM_USE_NS
 INCLUDEPATH += $$PWD
 {{$vendirDir := .VendorDir}}
 {{range $dep := .Dependencies}}
