@@ -106,8 +106,9 @@ func (ic *InitCommand) Run() error {
 
 	ic.Pkg.Repository.Url, err = vcs.RepositorySubURL()
 	if err != nil {
-		ic.Error(err)
+		fmt.Println("WARNING: Could not auto-detect repository URL.")
 	}
+
 	ic.Pkg.Repository.Url = <-Prompt("Repository:", ic.Pkg.Repository.Url)
 
 	filename, _ := ic.findPriFile()
