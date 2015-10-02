@@ -60,7 +60,7 @@ func RepositorySubURL() (string, error) {
 	} else if strings.HasPrefix(str, "https://github.com/") {
 		str = strings.TrimPrefix(str, "https://github.com/")
 	} else {
-		return "", err
+		return "", fmt.Errorf("This does not seem to be a GitHub repository.")
 	}
 	return str, nil
 }
