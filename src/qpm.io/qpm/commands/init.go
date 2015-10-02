@@ -10,13 +10,12 @@ import (
 	"github.com/howeyc/gopass"
 	"os"
 	"path/filepath"
-	"qpm.io/common"
-	"qpm.io/qpm/core"
-	"strconv"
 	"strings"
 	"text/template"
-	"time"
+	"qpm.io/common"
+	"qpm.io/qpm/core"
 	"qpm.io/qpm/vcs"
+	"qpm.io/qpm/license"
 )
 
 func Prompt(prompt string, def string) chan string {
@@ -108,7 +107,6 @@ func (ic *InitCommand) Run() error {
 	ic.Pkg.Repository.Url, err = vcs.RepositorySubURL()
 	if err != nil {
 		ic.Error(err)
-		return err
 	}
 	ic.Pkg.Repository.Url = <-Prompt("Repository:", ic.Pkg.Repository.Url)
 
@@ -176,21 +174,10 @@ func (ic InitCommand) GenerateBoilerplate() error {
 	return nil
 }
 
-type License struct {
-	Key       string
-	Name      string
-	Permitted []string
-	Forbidden []string
-	Body      string
-}
+func (ic *InitCommand) license(identifier string) error {
 
-func (ic *InitCommand) license(license string) error {
-
-	info, err := core.GetLicense(license)
-
-	// FIXME: this is probably tied to the MIT license layout
-	info.Body = strings.Replace(info.Body, "[year]", strconv.Itoa(time.Now().Year()), -1)
-	info.Body = strings.Replace(info.Body, "[fullname]", ic.Pkg.Author.Name, -1)
+	println("LICENSE FETCH")
+	info, err := license.GetLicense(identifier, ic.Pkg)
 
 	var file *os.File
 	file, err = os.Create(core.LicenseFile)

@@ -7,8 +7,6 @@ import (
 	"fmt"
 	msg "qpm.io/common/messages"
 	"strings"
-	"net/http"
-	"encoding/json"
 	"text/template"
 	"os"
 )
@@ -28,38 +26,6 @@ func PrintSearchResults(results []*msg.SearchResult) {
 			r.GetAuthor().Name+" <"+r.GetAuthor().Email+">",
 		)
 	}
-}
-
-type License struct {
-	Key       string
-	Name      string
-	Permitted []string
-	Forbidden []string
-	Body      string
-}
-
-// Fetches a license info object from the Github license API.
-func GetLicense(license string) (License, error) {
-	var licenseInfo License
-	url := "https://api.github.com/licenses/" + license
-	client := &http.Client{}
-
-	request, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		return licenseInfo, err
-	}
-	request.Header.Set("Accept", "application/vnd.github.drax-preview+json")
-
-	var response *http.Response
-	response, err = client.Do(request)
-	if err != nil {
-		return licenseInfo, err
-	}
-	defer response.Body.Close()
-
-	dec := json.NewDecoder(response.Body)
-	err = dec.Decode(&licenseInfo);
-	return licenseInfo, err
 }
 
 // Renders the given template using the fields contained in the data parameter and
