@@ -45,24 +45,13 @@ func LastCommitEmail() (string, error) {
 	return strings.TrimSpace(string(out)), err
 }
 
-func RepositorySubURL() (string, error) {
+func RepositoryURL() (string, error) {
 	// TODO: refactor this to an interface for all VCSs and hosts
 	out, err := exec.Command("git", "config", "remote.origin.url").Output()
 	if err != nil {
 		return "", fmt.Errorf("We could not get the repository remote origin URL.")
 	}
-
-	// assumes github
-	str := strings.TrimSpace(string(out))
-	if strings.HasPrefix(str, "git@github.com:") {
-		str = strings.TrimPrefix(str, "git@github.com:")
-		str = strings.TrimSuffix(str, ".git")
-	} else if strings.HasPrefix(str, "https://github.com/") {
-		str = strings.TrimPrefix(str, "https://github.com/")
-	} else {
-		return "", fmt.Errorf("This does not seem to be a GitHub repository.")
-	}
-	return str, nil
+	return strings.TrimSpace(string(out)), err
 }
 
 func RepositoryFileList() ([]string, error) {
@@ -150,7 +139,18 @@ func Install(dependency *msg.Dependency, destination string) (*common.PackageWra
 
 func download(dependency *msg.Dependency, destination string) (fileName string, err error) {
 
-	url := GitHubURL + "/" + dependency.Repository.Url + "/" + Tarball + "/" + dependency.Version.Revision
+	repo := dependency.Repository.Url
+	if strings.HasPrefix(repo, "git@github.com:") {
+		repo = strings.TrimPrefix(repo, "git@github.com:")
+		repo = strings.TrimSuffix(repo, ".git")
+	} else if strings.HasPrefix(repo, "https://github.com/") {
+		repo = strings.TrimPrefix(repo, "https://github.com/")
+		repo = strings.TrimSuffix(repo, ".git")
+	} else {
+		return "", fmt.Errorf("This does not seem to be a GitHub repository.")
+	}
+
+	url := GitHubURL + "/" + repo + "/" + Tarball + "/" + dependency.Version.Revision
 	tokens := strings.Split(url, "/")
 	fileName = destination + string(filepath.Separator) + tokens[len(tokens)-2] + TarSuffix // FIXME: we assume it's a tarball
 
