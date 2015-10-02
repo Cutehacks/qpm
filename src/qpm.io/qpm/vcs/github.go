@@ -49,7 +49,7 @@ func RepositorySubURL() (string, error) {
 	// TODO: refactor this to an interface for all VCSs and hosts
 	out, err := exec.Command("git", "config", "remote.origin.url").Output()
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("We could not get the repository remote origin URL.")
 	}
 
 	// assumes github
