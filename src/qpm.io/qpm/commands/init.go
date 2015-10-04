@@ -177,7 +177,6 @@ func (ic InitCommand) GenerateBoilerplate() error {
 
 func (ic *InitCommand) license(identifier string) error {
 
-	println("LICENSE FETCH")
 	info, err := license.GetLicense(identifier, ic.Pkg)
 
 	var file *os.File
