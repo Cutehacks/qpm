@@ -44,6 +44,7 @@ func (p *InfoCommand) Run() error {
 
 	fmt.Printf("\nName: %s", response.Package.Name)
 	fmt.Printf("\nAuthor: %s (%s)", response.Package.Author.Name, response.Package.Author.Email)
+	fmt.Printf("\nWebpage: %s", response.Package.Webpage)
 	fmt.Printf("\nLicense: %s", response.Package.License.String())
 	fmt.Printf("\nRepository: %s", response.Package.Repository.Url)
 	fmt.Printf("\nDescription: %s\n", response.Package.Description)
