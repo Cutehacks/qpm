@@ -16,7 +16,7 @@ publish source code (QML, JS, C++) components that can be compiled into Qt appli
 
 * [Goals](#goals)
 * [How it works](#how-it-works)
-* [Installing] ()
+* [Installing] (#installing)
   * [Download a binary](#download-a-binary)
   * [Use Qt's Maintenance Tool](#use-qts-maintenance-tool)
   * [Compile from source](#compile-from-source)
