@@ -109,7 +109,7 @@ func (ic *InitCommand) Run() error {
 		fmt.Println("WARNING: Could not auto-detect repository URL.")
 	}
 
-	ic.Pkg.Repository.Url = <-Prompt("Repository:", ic.Pkg.Repository.Url)
+	ic.Pkg.Repository.Url = <-Prompt("Clone URL:", ic.Pkg.Repository.Url)
 
 	filename, _ := ic.findPriFile()
 	if len(filename) == 0 {
