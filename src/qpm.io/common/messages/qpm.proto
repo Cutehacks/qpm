@@ -39,6 +39,7 @@ message Package {
 	repeated string dependencies = 6;
 	LicenseType license = 7;
 	string pri_filename = 8;
+	string webpage = 10;
 }
 
 message Dependency {

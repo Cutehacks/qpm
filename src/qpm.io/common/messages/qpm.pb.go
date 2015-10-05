@@ -94,6 +94,7 @@ type Package struct {
 	Dependencies []string            `protobuf:"bytes,6,rep,name=dependencies" json:"dependencies,omitempty"`
 	License      LicenseType         `protobuf:"varint,7,opt,name=license,enum=messages.LicenseType" json:"license,omitempty"`
 	PriFilename  string              `protobuf:"bytes,8,opt,name=pri_filename" json:"pri_filename,omitempty"`
+	Webpage      string              `protobuf:"bytes,10,opt,name=webpage" json:"webpage,omitempty"`
 }
 
 func (m *Package) Reset()         { *m = Package{} }
