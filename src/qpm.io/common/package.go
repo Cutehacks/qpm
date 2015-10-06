@@ -22,7 +22,7 @@ const (
 )
 
 var (
-	regexPackageName = regexp.MustCompile("^[a-zA-Z]{2,}\\.[a-zA-Z0-9][a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9]?\\.[a-zA-Z0-9][a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9]?$")
+	regexPackageName = regexp.MustCompile("^[a-zA-Z]{2,}\\.[a-zA-Z0-9][a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9]?(\\.[a-zA-Z0-9][a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9]?)+$")
 	regexVersion     = regexp.MustCompile("[0-9].[0-9].[0-9]*")
 	regexAuthorName  = regexp.MustCompile("^[\\p{L}\\s'.-]+$")
 	regexAuthorEmail = regexp.MustCompile(".+@.+\\..+")
