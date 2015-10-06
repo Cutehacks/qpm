@@ -34,7 +34,7 @@ func NewVerifyCommand(ctx core.Context) *VerifyCommand {
 }
 
 func (v VerifyCommand) Description() string {
-	return "Verifies the package PGP signature"
+	return "Verifies the package PGP signature (experimental)"
 }
 
 func (v * VerifyCommand) RegisterFlags(flags *flag.FlagSet) {

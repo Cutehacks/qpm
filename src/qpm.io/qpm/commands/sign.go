@@ -36,7 +36,7 @@ func NewSignCommand(ctx core.Context) *SignCommand {
 }
 
 func (s SignCommand) Description() string {
-	return "Creates a PGP signature for the package"
+	return "Creates a PGP signature for the package (experimental)"
 }
 
 func (s * SignCommand) RegisterFlags(flags *flag.FlagSet) {
