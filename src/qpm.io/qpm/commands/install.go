@@ -195,13 +195,16 @@ func (i *InstallCommand) save(newDeps []*common.PackageWrapper) error {
 	for _, d := range newDeps {
 		existingVersion, exists := existingDeps[d.Name]
 		if exists {
-			if d.Version.Label == existingVersion {
-				i.Info("The package is already a dependency : " + d.GetDependencySignature())
-			} else {
-				// TODO: Handle conflicts
-				err := fmt.Errorf("Conflict for package %s. Version %s != %s", d.Name, existingVersion, d.Version.Label)
-				i.Error(err)
-				return err
+			if d.Version.Label != existingVersion {
+				existingSignature := strings.Join([]string{d.Name, existingVersion}, "@")
+				message := fmt.Sprint(existingSignature, " is already a dependency. Replacing with version ", d.Version.Label, ".")
+				i.Warning(message)
+				for n, e := range i.pkg.Dependencies {
+					if existingSignature == e {
+						i.pkg.Dependencies[n] = d.GetDependencySignature()
+						break
+					}
+				}
 			}
 		} else {
 			i.pkg.Dependencies = append(i.pkg.Dependencies, d.GetDependencySignature())
