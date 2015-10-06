@@ -139,7 +139,7 @@ RESOURCES += \
 `))
 	moduleQrc = template.Must(template.New("moduleQrc").Parse(`
 <RCC>
-    <qresource prefix="{{.QrcPrefix}}">
+    <qresource prefix="/{{.QrcPrefix}}">
         <file>qmldir</file>
     </qresource>
 </RCC>

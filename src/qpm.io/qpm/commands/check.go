@@ -71,7 +71,7 @@ func (c *CheckCommand) Run() error {
 	prefix, err = c.qrc()
 	if err != nil {
 		c.Warning(err.Error())
-	} else if prefix != c.pkg.QrcPrefix() {
+	} else if prefix != c.pkg.QrcPrefix() && prefix[1:] != c.pkg.QrcPrefix() {
 		c.Error(fmt.Errorf("the QRC prefix (%s) does not equal (%s)", prefix, c.pkg.QrcPrefix()))
 	}
 
