@@ -102,6 +102,8 @@ func (i *InstallCommand) Run() error {
 	packageName := i.fs.Arg(0)
 
 	var err error
+    var dependCopyleftLicense bool;
+    
 	i.pkg, err = common.LoadPackage("")
 	if err != nil {
 		// A missing package file is only an error if packageName is empty
@@ -156,8 +158,17 @@ func (i *InstallCommand) Run() error {
 		if err != nil {
 			return err
 		}
+
+        if common.IsCopyLeftLicense(p.License) {
+            dependCopyleftLicense = true;
+        }
+        
 		packages = append(packages, p)
 	}
+        
+    if dependCopyleftLicense && !common.IsCopyLeftLicense(i.pkg.License) {
+        i.Warning("You are installing a package that is licensed under the GPL/LGPL. Please ensure that you have read and understand the terms and conditions of this license before distributing your software.");
+    }
 
 	// Save the dependencies in the package file
 	err = i.save(packages)
