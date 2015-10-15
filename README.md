@@ -26,6 +26,7 @@ publish source code (QML, JS, C++) components that can be compiled into Qt appli
   * [Package Naming](#package-naming)
   * [A note on versioning](#a-note-on-versioning)
 * [Contributing](#contributing)
+  * [Code Style](#code-style)
   * [Prerequisites](#prerequisites)
   * [Generating Protocol Buffers](#generating-protocol-buffers)
 * [FAQ](#faq)
@@ -294,6 +295,12 @@ qpm uses Google's Protocol Buffers to communicate between the command line tool 
 it uses the new "proto3" version which has support for Go and also gRPC which is also used.  
 
 If you make change to the .proto files you need to follow the steps below.
+
+## Code Style
+
+Since the app is written in Go, we request that all contributions be formatted with the `go fmt` tool. More info on this tool can be found [here](https://blog.golang.org/go-fmt-your-code).
+
+Additionally, if you edit the .proto file, you should follow the [Protocol Buffers Style Guide](https://developers.google.com/protocol-buffers/docs/style).
 
 ## Prerequisites
 
