@@ -14,8 +14,6 @@ import (
 	"regexp"
 	"strings"
 	"path/filepath"
-    jsonUtils "encoding/json"
-    "bytes"
 )
 
 const (
@@ -114,29 +112,7 @@ func LoadPackage(path string) (*PackageWrapper, error) {
 		}
 		defer file.Close()
 
-        raw := jsonUtils.RawMessage{}
-        if  err = jsonUtils.NewDecoder(file).Decode(&raw); err != nil {
-            return pw, err
-        }
-        
-        var v interface{}
-        
-        if err = jsonUtils.Unmarshal(raw,&v); err != nil {
-            return pw,err
-        }
-        
-        re := regexp.MustCompile("[-\\.]");
-        
-        var m map[string] interface{};
-        
-        m = v.(map[string]interface{})
-        var license string;
-        license = m["license"].(string);
-        m["license"] = re.ReplaceAllString(license ,"_");
-        
-        raw,err = jsonUtils.Marshal(m);
-
-		if err = json.Unmarshal(bytes.NewReader(raw), pw.Package); err != nil {
+		if err = json.Unmarshal(file, pw.Package); err != nil {
 			return pw, err
 		}
 
@@ -168,21 +144,6 @@ func LoadPackages(vendorDir string) (map[string]*PackageWrapper, error) {
 	})
 
 	return packageMap, err
-}
-
-func IsCopyLeftLicense(license msg.LicenseType) bool {
-    licenses := []msg.LicenseType{msg.LicenseType_GPL_2_0,
-                                  msg.LicenseType_GPL_3_0,
-                                  msg.LicenseType_LGPL_2_1,
-                                  msg.LicenseType_LGPL_3_0,
-    }
-    
-    for _,v := range licenses {
-        if (v == license) {
-            return true;
-        }
-    }
-    return false;
 }
 
 func (pw PackageWrapper) Save() error {
