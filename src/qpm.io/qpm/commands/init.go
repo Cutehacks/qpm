@@ -21,6 +21,8 @@ import (
 	"text/template"
 )
 
+var regexGitHubLicense = regexp.MustCompile("[-\\.]")
+
 func Prompt(prompt string, def string) chan string {
 	replyChannel := make(chan string, 1)
 
@@ -119,10 +121,8 @@ func (ic *InitCommand) Run() error {
 		filename = ic.Pkg.PriFile()
 	}
 
-	re := regexp.MustCompile("[-\\.]")
-
-	license := <-Prompt("Licnese:", "MIT")
-	license = re.ReplaceAllString(license, "_")
+	license := <-Prompt("License:", "MIT")
+	license = regexGitHubLicense.ReplaceAllString(license, "_")
 
 	if licenseType, err := msg.LicenseType_value[license]; !err {
 		msg := fmt.Sprintf("ERROR: Non-supported license type: %s\n", license)
