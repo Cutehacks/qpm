@@ -9,6 +9,7 @@ It is generated from these files:
 	qpm.proto
 
 It has these top-level messages:
+	DependencyMessage
 	Package
 	Dependency
 	VersionInfo
@@ -120,6 +121,40 @@ var LicenseType_value = map[string]int32{
 func (x LicenseType) String() string {
 	return proto.EnumName(LicenseType_name, int32(x))
 }
+
+type MessageType int32
+
+const (
+	MessageType_INFO    MessageType = 0
+	MessageType_WARNING MessageType = 1
+	MessageType_ERROR   MessageType = 2
+)
+
+var MessageType_name = map[int32]string{
+	0: "INFO",
+	1: "WARNING",
+	2: "ERROR",
+}
+var MessageType_value = map[string]int32{
+	"INFO":    0,
+	"WARNING": 1,
+	"ERROR":   2,
+}
+
+func (x MessageType) String() string {
+	return proto.EnumName(MessageType_name, int32(x))
+}
+
+type DependencyMessage struct {
+	Type   MessageType `protobuf:"varint,1,opt,name=type,enum=messages.MessageType" json:"type,omitempty"`
+	Title  string      `protobuf:"bytes,2,opt,name=title" json:"title,omitempty"`
+	Body   string      `protobuf:"bytes,3,opt,name=body" json:"body,omitempty"`
+	Prompt bool        `protobuf:"varint,4,opt,name=prompt" json:"prompt,omitempty"`
+}
+
+func (m *DependencyMessage) Reset()         { *m = DependencyMessage{} }
+func (m *DependencyMessage) String() string { return proto.CompactTextString(m) }
+func (*DependencyMessage) ProtoMessage()    {}
 
 type Package struct {
 	Name         string              `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
@@ -289,7 +324,8 @@ func (m *DependencyRequest) String() string { return proto.CompactTextString(m) 
 func (*DependencyRequest) ProtoMessage()    {}
 
 type DependencyResponse struct {
-	Dependencies []*Dependency `protobuf:"bytes,1,rep,name=dependencies" json:"dependencies,omitempty"`
+	Dependencies []*Dependency        `protobuf:"bytes,1,rep,name=dependencies" json:"dependencies,omitempty"`
+	Messages     []*DependencyMessage `protobuf:"bytes,2,rep,name=messages" json:"messages,omitempty"`
 }
 
 func (m *DependencyResponse) Reset()         { *m = DependencyResponse{} }
@@ -299,6 +335,13 @@ func (*DependencyResponse) ProtoMessage()    {}
 func (m *DependencyResponse) GetDependencies() []*Dependency {
 	if m != nil {
 		return m.Dependencies
+	}
+	return nil
+}
+
+func (m *DependencyResponse) GetMessages() []*DependencyMessage {
+	if m != nil {
+		return m.Messages
 	}
 	return nil
 }
@@ -408,6 +451,7 @@ func (m *InfoResponse) GetDependencies() []*Dependency {
 func init() {
 	proto.RegisterEnum("messages.RepoType", RepoType_name, RepoType_value)
 	proto.RegisterEnum("messages.LicenseType", LicenseType_name, LicenseType_value)
+	proto.RegisterEnum("messages.MessageType", MessageType_name, MessageType_value)
 }
 
 // Reference imports to suppress errors if they are not otherwise used.

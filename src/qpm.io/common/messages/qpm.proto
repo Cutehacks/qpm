@@ -25,6 +25,19 @@ enum LicenseType {
 	LGPL_3_0 = 13;
 }
 
+enum MessageType {
+	INFO = 0;
+	WARNING = 1;
+	ERROR = 2;
+}
+
+message DependencyMessage {
+	MessageType type = 1;
+	string title = 2;
+	string body = 3;
+	bool prompt = 4;
+}
+
 message Package {
 
 	message Repository {
@@ -94,6 +107,7 @@ message DependencyRequest {
 
 message DependencyResponse {
 	repeated Dependency dependencies = 1;
+	repeated DependencyMessage messages = 2;
 }
 
 message SearchRequest {

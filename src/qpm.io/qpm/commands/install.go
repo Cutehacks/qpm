@@ -144,6 +144,24 @@ func (i *InstallCommand) Run() error {
 		return nil
 	}
 
+	// Show info, warnings, errors and address prompts before continuing
+	for _, msg := range response.Messages {
+		fmt.Printf("%s: %s\n", msg.Type.String(), msg.Title)
+
+		if msg.Body != "" {
+			fmt.Println(msg.Body)
+		}
+
+		if msg.Prompt {
+			continueAnyway := <-Prompt("Continue anyway?", "Y/n")
+			if len(continueAnyway) == 0 || strings.ToLower(string(continueAnyway[0])) == "y" {
+				continue
+			} else {
+				return fmt.Errorf("Installation aborted.")
+			}
+		}
+	}
+
 	// create the vendor directory if needed
 	if _, err = os.Stat(i.vendorDir); err != nil {
 		err = os.Mkdir(i.vendorDir, 0755)
