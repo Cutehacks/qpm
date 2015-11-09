@@ -16,13 +16,15 @@ enum LicenseType {
 	ARTISTIC_2_0 = 4;
 	BSD_2_CLAUSE = 5;
 	BSD_3_CLAUSE =6;
-	CC0 = 7;
+	CC0_1_0 = 7;
 	EPL_1_0 = 8;
 	GPL_2_0 = 9;
 	GPL_3_0 = 10;
 	ISC = 11;
 	LGPL_2_1 = 12;
 	LGPL_3_0 = 13;
+	UNLICENSE = 14;
+	MPL_2_0 = 15;
 }
 
 enum MessageType {

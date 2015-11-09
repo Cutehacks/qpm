@@ -78,13 +78,15 @@ const (
 	LicenseType_ARTISTIC_2_0 LicenseType = 4
 	LicenseType_BSD_2_CLAUSE LicenseType = 5
 	LicenseType_BSD_3_CLAUSE LicenseType = 6
-	LicenseType_CC0          LicenseType = 7
+	LicenseType_CC0_1_0      LicenseType = 7
 	LicenseType_EPL_1_0      LicenseType = 8
 	LicenseType_GPL_2_0      LicenseType = 9
 	LicenseType_GPL_3_0      LicenseType = 10
 	LicenseType_ISC          LicenseType = 11
 	LicenseType_LGPL_2_1     LicenseType = 12
 	LicenseType_LGPL_3_0     LicenseType = 13
+	LicenseType_UNLICENSE    LicenseType = 14
+	LicenseType_MPL_2_0      LicenseType = 15
 )
 
 var LicenseType_name = map[int32]string{
@@ -95,13 +97,15 @@ var LicenseType_name = map[int32]string{
 	4:  "ARTISTIC_2_0",
 	5:  "BSD_2_CLAUSE",
 	6:  "BSD_3_CLAUSE",
-	7:  "CC0",
+	7:  "CC0_1_0",
 	8:  "EPL_1_0",
 	9:  "GPL_2_0",
 	10: "GPL_3_0",
 	11: "ISC",
 	12: "LGPL_2_1",
 	13: "LGPL_3_0",
+	14: "UNLICENSE",
+	15: "MPL_2_0",
 }
 var LicenseType_value = map[string]int32{
 	"NONE":         0,
@@ -111,13 +115,15 @@ var LicenseType_value = map[string]int32{
 	"ARTISTIC_2_0": 4,
 	"BSD_2_CLAUSE": 5,
 	"BSD_3_CLAUSE": 6,
-	"CC0":          7,
+	"CC0_1_0":      7,
 	"EPL_1_0":      8,
 	"GPL_2_0":      9,
 	"GPL_3_0":      10,
 	"ISC":          11,
 	"LGPL_2_1":     12,
 	"LGPL_3_0":     13,
+	"UNLICENSE":    14,
+	"MPL_2_0":      15,
 }
 
 func (x LicenseType) String() string {
