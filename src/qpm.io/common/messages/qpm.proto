@@ -146,6 +146,14 @@ message InfoResponse {
 	repeated Dependency dependencies = 3;
 }
 
+message LicenseRequest {
+	Package package = 1;
+}
+
+message LicenseResponse {
+	string body = 1;
+}
+
 service Qpm {
 
 	rpc Ping(PingRequest) returns (PingResponse) {}
@@ -161,4 +169,6 @@ service Qpm {
 	rpc Login(LoginRequest) returns (LoginResponse) {}
 
 	rpc Info(InfoRequest) returns (InfoResponse) {}
+
+	rpc GetLicense(LicenseRequest) returns (LicenseResponse) {}
 }

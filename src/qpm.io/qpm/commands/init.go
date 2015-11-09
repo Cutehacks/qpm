@@ -9,12 +9,12 @@ import (
 	"flag"
 	"fmt"
 	"github.com/howeyc/gopass"
+	"golang.org/x/net/context"
 	"os"
 	"path/filepath"
 	"qpm.io/common"
 	msg "qpm.io/common/messages"
 	"qpm.io/qpm/core"
-	"qpm.io/qpm/license"
 	"qpm.io/qpm/vcs"
 	"regexp"
 	"strings"
@@ -144,7 +144,8 @@ func (ic *InitCommand) Run() error {
 		if err := ic.GenerateBoilerplate(); err != nil {
 			return err
 		}
-		// ic.license("mit") // FIXME: add support for more licenses
+
+		ic.GenerateLicense()
 	}
 	return nil
 }
@@ -192,23 +193,24 @@ func (ic InitCommand) GenerateBoilerplate() error {
 	return nil
 }
 
-func (ic *InitCommand) license(identifier string) error {
+func (ic *InitCommand) GenerateLicense() error {
 
-	info, err := license.GetLicense(identifier, ic.Pkg)
+	req := &msg.LicenseRequest{
+		Package: ic.Pkg.Package,
+	}
+	license, err := ic.Ctx.Client.GetLicense(context.Background(), req)
+	if err != nil {
+		return err
+	}
 
-	var file *os.File
-	file, err = os.Create(core.LicenseFile)
+	file, err := os.Create(core.LicenseFile)
 	if err != nil {
 		return err
 	}
 	defer file.Close()
 
-	_, err = file.WriteString(info.Body)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	_, err = file.WriteString(license.Body)
+	return err
 }
 
 func (ic *InitCommand) findPriFile() (string, error) {

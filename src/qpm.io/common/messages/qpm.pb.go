@@ -28,6 +28,8 @@ It has these top-level messages:
 	LoginResponse
 	InfoRequest
 	InfoResponse
+	LicenseRequest
+	LicenseResponse
 */
 package messages
 
@@ -448,6 +450,29 @@ func (m *InfoResponse) GetDependencies() []*Dependency {
 	return nil
 }
 
+type LicenseRequest struct {
+	Package *Package `protobuf:"bytes,1,opt,name=package" json:"package,omitempty"`
+}
+
+func (m *LicenseRequest) Reset()         { *m = LicenseRequest{} }
+func (m *LicenseRequest) String() string { return proto.CompactTextString(m) }
+func (*LicenseRequest) ProtoMessage()    {}
+
+func (m *LicenseRequest) GetPackage() *Package {
+	if m != nil {
+		return m.Package
+	}
+	return nil
+}
+
+type LicenseResponse struct {
+	Body string `protobuf:"bytes,1,opt,name=body" json:"body,omitempty"`
+}
+
+func (m *LicenseResponse) Reset()         { *m = LicenseResponse{} }
+func (m *LicenseResponse) String() string { return proto.CompactTextString(m) }
+func (*LicenseResponse) ProtoMessage()    {}
+
 func init() {
 	proto.RegisterEnum("messages.RepoType", RepoType_name, RepoType_value)
 	proto.RegisterEnum("messages.LicenseType", LicenseType_name, LicenseType_value)
@@ -468,6 +493,7 @@ type QpmClient interface {
 	List(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListResponse, error)
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
 	Info(ctx context.Context, in *InfoRequest, opts ...grpc.CallOption) (*InfoResponse, error)
+	GetLicense(ctx context.Context, in *LicenseRequest, opts ...grpc.CallOption) (*LicenseResponse, error)
 }
 
 type qpmClient struct {
@@ -541,6 +567,15 @@ func (c *qpmClient) Info(ctx context.Context, in *InfoRequest, opts ...grpc.Call
 	return out, nil
 }
 
+func (c *qpmClient) GetLicense(ctx context.Context, in *LicenseRequest, opts ...grpc.CallOption) (*LicenseResponse, error) {
+	out := new(LicenseResponse)
+	err := grpc.Invoke(ctx, "/messages.Qpm/GetLicense", in, out, c.cc, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for Qpm service
 
 type QpmServer interface {
@@ -551,6 +586,7 @@ type QpmServer interface {
 	List(context.Context, *ListRequest) (*ListResponse, error)
 	Login(context.Context, *LoginRequest) (*LoginResponse, error)
 	Info(context.Context, *InfoRequest) (*InfoResponse, error)
+	GetLicense(context.Context, *LicenseRequest) (*LicenseResponse, error)
 }
 
 func RegisterQpmServer(s *grpc.Server, srv QpmServer) {
@@ -641,6 +677,18 @@ func _Qpm_Info_Handler(srv interface{}, ctx context.Context, codec grpc.Codec, b
 	return out, nil
 }
 
+func _Qpm_GetLicense_Handler(srv interface{}, ctx context.Context, codec grpc.Codec, buf []byte) (interface{}, error) {
+	in := new(LicenseRequest)
+	if err := codec.Unmarshal(buf, in); err != nil {
+		return nil, err
+	}
+	out, err := srv.(QpmServer).GetLicense(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 var _Qpm_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "messages.Qpm",
 	HandlerType: (*QpmServer)(nil),
@@ -672,6 +720,10 @@ var _Qpm_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Info",
 			Handler:    _Qpm_Info_Handler,
+		},
+		{
+			MethodName: "GetLicense",
+			Handler:    _Qpm_GetLicense_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{},
