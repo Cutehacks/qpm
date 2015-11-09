@@ -5,18 +5,23 @@ package commands
 
 import (
 	"bufio"
+	"errors"
 	"flag"
 	"fmt"
 	"github.com/howeyc/gopass"
 	"os"
 	"path/filepath"
+	"qpm.io/common"
+	msg "qpm.io/common/messages"
+	"qpm.io/qpm/core"
+	"qpm.io/qpm/license"
+	"qpm.io/qpm/vcs"
+	"regexp"
 	"strings"
 	"text/template"
-	"qpm.io/common"
-	"qpm.io/qpm/core"
-	"qpm.io/qpm/vcs"
-	"qpm.io/qpm/license"
 )
+
+var regexGitHubLicense = regexp.MustCompile("[-\\.]")
 
 func Prompt(prompt string, def string) chan string {
 	replyChannel := make(chan string, 1)
@@ -115,6 +120,18 @@ func (ic *InitCommand) Run() error {
 	if len(filename) == 0 {
 		filename = ic.Pkg.PriFile()
 	}
+
+	license := <-Prompt("License:", "MIT")
+	license = regexGitHubLicense.ReplaceAllString(license, "_")
+
+	if licenseType, err := msg.LicenseType_value[license]; !err {
+		msg := fmt.Sprintf("ERROR: Non-supported license type: %s\n", license)
+		fmt.Print(msg)
+		return errors.New(msg)
+	} else {
+		ic.Pkg.License = msg.LicenseType(licenseType)
+	}
+
 	ic.Pkg.PriFilename = <-Prompt("Package .pri file:", filename)
 
 	if err := ic.Pkg.Save(); err != nil {
@@ -127,7 +144,7 @@ func (ic *InitCommand) Run() error {
 		if err := ic.GenerateBoilerplate(); err != nil {
 			return err
 		}
-		ic.license("mit") // FIXME: add support for more licenses
+		// ic.license("mit") // FIXME: add support for more licenses
 	}
 	return nil
 }

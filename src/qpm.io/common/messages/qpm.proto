@@ -11,6 +11,18 @@ enum RepoType {
 enum LicenseType {
 	NONE = 0;
 	MIT = 1;
+	AGPL_3_0 = 2;
+	APACHE_2_0 = 3;
+	ARTISTIC_2_0 = 4;
+	BSD_2_CLAUSE = 5;
+	BSD_3_CLAUSE =6;
+	CC0 = 7;
+	EPL_1_0 = 8;
+	GPL_2_0 = 9;
+	GPL_3_0 = 10;
+	ISC = 11;
+	LGPL_2_1 = 12;
+	LGPL_3_0 = 13;
 }
 
 message Package {
