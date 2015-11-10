@@ -122,12 +122,18 @@ func (ic *InitCommand) Run() error {
 	}
 
 	license := <-Prompt("License:", "MIT")
-	license = regexGitHubLicense.ReplaceAllString(license, "_")
+
+	// convert Github style license strings
+	license = strings.ToUpper(regexGitHubLicense.ReplaceAllString(license, "_"))
 
 	if licenseType, err := msg.LicenseType_value[license]; !err {
-		msg := fmt.Sprintf("ERROR: Non-supported license type: %s\n", license)
-		fmt.Print(msg)
-		return errors.New(msg)
+		errMsg := fmt.Sprintf("ERROR: Non-supported license type: %s\n", license)
+		fmt.Print(errMsg)
+		fmt.Printf("Valid values are:\n")
+		for i := 0; i < len(msg.LicenseType_name); i++ {
+			fmt.Println("\t" + msg.LicenseType_name[int32(i)])
+		}
+		return errors.New(errMsg)
 	} else {
 		ic.Pkg.License = msg.LicenseType(licenseType)
 	}
