@@ -105,6 +105,7 @@ message PublishResponse {
 
 message DependencyRequest {
 	repeated string package_names = 1;
+	LicenseType compat_license = 4;
 }
 
 message DependencyResponse {

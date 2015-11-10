@@ -324,7 +324,8 @@ func (m *PublishResponse) String() string { return proto.CompactTextString(m) }
 func (*PublishResponse) ProtoMessage()    {}
 
 type DependencyRequest struct {
-	PackageNames []string `protobuf:"bytes,1,rep,name=package_names" json:"package_names,omitempty"`
+	PackageNames  []string    `protobuf:"bytes,1,rep,name=package_names" json:"package_names,omitempty"`
+	CompatLicense LicenseType `protobuf:"varint,4,opt,name=compat_license,enum=messages.LicenseType" json:"compat_license,omitempty"`
 }
 
 func (m *DependencyRequest) Reset()         { *m = DependencyRequest{} }

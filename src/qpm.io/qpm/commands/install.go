@@ -133,7 +133,10 @@ func (i *InstallCommand) Run() error {
 	}
 
 	// Get list of dependencies from the server
-	response, err := i.Ctx.Client.GetDependencies(context.Background(), &msg.DependencyRequest{packageNames})
+	response, err := i.Ctx.Client.GetDependencies(context.Background(), &msg.DependencyRequest{
+		packageNames,
+		i.pkg.License,
+	})
 	if err != nil {
 		i.Error(err)
 		return err
