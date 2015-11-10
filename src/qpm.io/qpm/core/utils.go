@@ -119,7 +119,7 @@ func printRow(screenWidth int, columnSpacing int, columnWidths []int, columns []
 		fmt.Printf("%s", string(runes))
 		w := columnWidths[i]
 		remaining -= len(runes)
-		toNextCol := IntMax(IntMin(w-len(runes)+columnSpacing, remaining), columnSpacing)
+		toNextCol := IntMax(IntMin(w-len(runes)+columnSpacing, remaining), 0)
 		fmt.Printf("%s", strings.Repeat(" ", toNextCol))
 		remaining -= toNextCol
 	}
