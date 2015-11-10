@@ -483,6 +483,30 @@ func (m *LicenseResponse) String() string { return proto.CompactTextString(m) }
 func (*LicenseResponse) ProtoMessage()    {}
 
 func init() {
+	proto.RegisterType((*DependencyMessage)(nil), "messages.DependencyMessage")
+	proto.RegisterType((*Package)(nil), "messages.Package")
+	proto.RegisterType((*Package_Repository)(nil), "messages.Package.Repository")
+	proto.RegisterType((*Package_Version)(nil), "messages.Package.Version")
+	proto.RegisterType((*Package_Author)(nil), "messages.Package.Author")
+	proto.RegisterType((*Dependency)(nil), "messages.Dependency")
+	proto.RegisterType((*VersionInfo)(nil), "messages.VersionInfo")
+	proto.RegisterType((*SearchResult)(nil), "messages.SearchResult")
+	proto.RegisterType((*PingRequest)(nil), "messages.PingRequest")
+	proto.RegisterType((*PingResponse)(nil), "messages.PingResponse")
+	proto.RegisterType((*PublishRequest)(nil), "messages.PublishRequest")
+	proto.RegisterType((*PublishResponse)(nil), "messages.PublishResponse")
+	proto.RegisterType((*DependencyRequest)(nil), "messages.DependencyRequest")
+	proto.RegisterType((*DependencyResponse)(nil), "messages.DependencyResponse")
+	proto.RegisterType((*SearchRequest)(nil), "messages.SearchRequest")
+	proto.RegisterType((*SearchResponse)(nil), "messages.SearchResponse")
+	proto.RegisterType((*ListRequest)(nil), "messages.ListRequest")
+	proto.RegisterType((*ListResponse)(nil), "messages.ListResponse")
+	proto.RegisterType((*LoginRequest)(nil), "messages.LoginRequest")
+	proto.RegisterType((*LoginResponse)(nil), "messages.LoginResponse")
+	proto.RegisterType((*InfoRequest)(nil), "messages.InfoRequest")
+	proto.RegisterType((*InfoResponse)(nil), "messages.InfoResponse")
+	proto.RegisterType((*LicenseRequest)(nil), "messages.LicenseRequest")
+	proto.RegisterType((*LicenseResponse)(nil), "messages.LicenseResponse")
 	proto.RegisterEnum("messages.RepoType", RepoType_name, RepoType_value)
 	proto.RegisterEnum("messages.LicenseType", LicenseType_name, LicenseType_value)
 	proto.RegisterEnum("messages.MessageType", MessageType_name, MessageType_value)
@@ -602,9 +626,9 @@ func RegisterQpmServer(s *grpc.Server, srv QpmServer) {
 	s.RegisterService(&_Qpm_serviceDesc, srv)
 }
 
-func _Qpm_Ping_Handler(srv interface{}, ctx context.Context, codec grpc.Codec, buf []byte) (interface{}, error) {
+func _Qpm_Ping_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error) (interface{}, error) {
 	in := new(PingRequest)
-	if err := codec.Unmarshal(buf, in); err != nil {
+	if err := dec(in); err != nil {
 		return nil, err
 	}
 	out, err := srv.(QpmServer).Ping(ctx, in)
@@ -614,9 +638,9 @@ func _Qpm_Ping_Handler(srv interface{}, ctx context.Context, codec grpc.Codec, b
 	return out, nil
 }
 
-func _Qpm_Publish_Handler(srv interface{}, ctx context.Context, codec grpc.Codec, buf []byte) (interface{}, error) {
+func _Qpm_Publish_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error) (interface{}, error) {
 	in := new(PublishRequest)
-	if err := codec.Unmarshal(buf, in); err != nil {
+	if err := dec(in); err != nil {
 		return nil, err
 	}
 	out, err := srv.(QpmServer).Publish(ctx, in)
@@ -626,9 +650,9 @@ func _Qpm_Publish_Handler(srv interface{}, ctx context.Context, codec grpc.Codec
 	return out, nil
 }
 
-func _Qpm_GetDependencies_Handler(srv interface{}, ctx context.Context, codec grpc.Codec, buf []byte) (interface{}, error) {
+func _Qpm_GetDependencies_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error) (interface{}, error) {
 	in := new(DependencyRequest)
-	if err := codec.Unmarshal(buf, in); err != nil {
+	if err := dec(in); err != nil {
 		return nil, err
 	}
 	out, err := srv.(QpmServer).GetDependencies(ctx, in)
@@ -638,9 +662,9 @@ func _Qpm_GetDependencies_Handler(srv interface{}, ctx context.Context, codec gr
 	return out, nil
 }
 
-func _Qpm_Search_Handler(srv interface{}, ctx context.Context, codec grpc.Codec, buf []byte) (interface{}, error) {
+func _Qpm_Search_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error) (interface{}, error) {
 	in := new(SearchRequest)
-	if err := codec.Unmarshal(buf, in); err != nil {
+	if err := dec(in); err != nil {
 		return nil, err
 	}
 	out, err := srv.(QpmServer).Search(ctx, in)
@@ -650,9 +674,9 @@ func _Qpm_Search_Handler(srv interface{}, ctx context.Context, codec grpc.Codec,
 	return out, nil
 }
 
-func _Qpm_List_Handler(srv interface{}, ctx context.Context, codec grpc.Codec, buf []byte) (interface{}, error) {
+func _Qpm_List_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error) (interface{}, error) {
 	in := new(ListRequest)
-	if err := codec.Unmarshal(buf, in); err != nil {
+	if err := dec(in); err != nil {
 		return nil, err
 	}
 	out, err := srv.(QpmServer).List(ctx, in)
@@ -662,9 +686,9 @@ func _Qpm_List_Handler(srv interface{}, ctx context.Context, codec grpc.Codec, b
 	return out, nil
 }
 
-func _Qpm_Login_Handler(srv interface{}, ctx context.Context, codec grpc.Codec, buf []byte) (interface{}, error) {
+func _Qpm_Login_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error) (interface{}, error) {
 	in := new(LoginRequest)
-	if err := codec.Unmarshal(buf, in); err != nil {
+	if err := dec(in); err != nil {
 		return nil, err
 	}
 	out, err := srv.(QpmServer).Login(ctx, in)
@@ -674,9 +698,9 @@ func _Qpm_Login_Handler(srv interface{}, ctx context.Context, codec grpc.Codec, 
 	return out, nil
 }
 
-func _Qpm_Info_Handler(srv interface{}, ctx context.Context, codec grpc.Codec, buf []byte) (interface{}, error) {
+func _Qpm_Info_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error) (interface{}, error) {
 	in := new(InfoRequest)
-	if err := codec.Unmarshal(buf, in); err != nil {
+	if err := dec(in); err != nil {
 		return nil, err
 	}
 	out, err := srv.(QpmServer).Info(ctx, in)
@@ -686,9 +710,9 @@ func _Qpm_Info_Handler(srv interface{}, ctx context.Context, codec grpc.Codec, b
 	return out, nil
 }
 
-func _Qpm_GetLicense_Handler(srv interface{}, ctx context.Context, codec grpc.Codec, buf []byte) (interface{}, error) {
+func _Qpm_GetLicense_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error) (interface{}, error) {
 	in := new(LicenseRequest)
-	if err := codec.Unmarshal(buf, in); err != nil {
+	if err := dec(in); err != nil {
 		return nil, err
 	}
 	out, err := srv.(QpmServer).GetLicense(ctx, in)

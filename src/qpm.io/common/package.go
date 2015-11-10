@@ -159,7 +159,7 @@ func (pw PackageWrapper) Save() error {
 	defer file.Close()
 
 	marshaller := &json.Marshaler{
-		EnumsAsString: true,
+		EnumsAsInts: false,
 		Indent: "  ",
 	}
 	return marshaller.Marshal(file, pw.Package)
