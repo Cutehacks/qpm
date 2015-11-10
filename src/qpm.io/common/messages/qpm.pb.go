@@ -270,9 +270,11 @@ func (m *VersionInfo) GetVersion() *Package_Version {
 }
 
 type SearchResult struct {
-	Name    string          `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
-	Version string          `protobuf:"bytes,2,opt,name=version" json:"version,omitempty"`
-	Author  *Package_Author `protobuf:"bytes,3,opt,name=author" json:"author,omitempty"`
+	Name        string          `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
+	Version     string          `protobuf:"bytes,2,opt,name=version" json:"version,omitempty"`
+	Author      *Package_Author `protobuf:"bytes,3,opt,name=author" json:"author,omitempty"`
+	Description string          `protobuf:"bytes,4,opt,name=description" json:"description,omitempty"`
+	License     LicenseType     `protobuf:"varint,5,opt,name=license,enum=messages.LicenseType" json:"license,omitempty"`
 }
 
 func (m *SearchResult) Reset()         { *m = SearchResult{} }

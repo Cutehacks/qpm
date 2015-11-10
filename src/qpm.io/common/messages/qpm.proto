@@ -84,6 +84,8 @@ message SearchResult {
 	string name = 1;
 	string version = 2;
 	Package.Author author = 3;
+	string description = 4;
+	LicenseType license = 5;
 }
 
 message PingRequest {
