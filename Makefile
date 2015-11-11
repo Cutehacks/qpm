@@ -13,8 +13,15 @@ BINARIES := \
   bin/darwin_386/qpm \
   bin/darwin_amd64/qpm
 
-default:
+default: $(SOURCES)
 	go install qpm.io/qpm
+
+src/qpm.io/common/messages/qpm.pb.go: src/qpm.io/common/messages/qpm.proto bin/protoc-gen-go
+	cd src/qpm.io/common/messages; \
+	protoc --plugin=$$GOPATH/bin/protoc-gen-go --go_out=plugins=grpc:. *.proto
+
+bin/protoc-gen-go:
+	go install github.com/golang/protobuf/protoc-gen-go
 
 .all: $(BINARIES)
 	echo test
