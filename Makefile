@@ -16,7 +16,7 @@ BINARIES := \
 default: $(SOURCES)
 	go install qpm.io/qpm
 
-src/qpm.io/common/messages/qpm.pb.go: src/qpm.io/common/messages/qpm.proto bin/protoc-gen-go
+.protobuf: src/qpm.io/common/messages/qpm.proto bin/protoc-gen-go
 	cd src/qpm.io/common/messages; \
 	protoc --plugin=$$GOPATH/bin/protoc-gen-go --go_out=plugins=grpc:. *.proto
 
@@ -35,4 +35,4 @@ clean:
 	@rm -rf $(BINARIES)
 
 
-.PHONY: default clean .all
+.PHONY: default clean .all .protobuf
