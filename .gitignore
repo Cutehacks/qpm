@@ -5,3 +5,7 @@
 bin/
 pkg/
 
+# build files
+staging/
+repository/
+

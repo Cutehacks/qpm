@@ -1,6 +1,7 @@
 
 VERSION := 0.10.0
 GOPATH  := ${PWD}
+TS      := $(shell /bin/date "+%Y-%m-%d---%H-%M-%S")
 export GOPATH
 
 SOURCES := $(shell find . -name '*.go')
@@ -33,6 +34,20 @@ $(BINARIES): $(SOURCES)
 
 clean:
 	@rm -rf $(BINARIES)
+	@rm -rf staging/
+	@rm -rf repository/
 
+# Targets for building the Qt Maintence Tool Repository
+
+bin/packager: $(SOURCES)
+	go install qpm.io/tools/packager
+
+staging/packages: $(BINARIES) bin/packager
+	bin/packager staging
+
+repository: staging/packages
+	repogen -p staging/packages -r repository
+	gsutil -m cp -r gs://www.qpm.io/repository gs://www.qpm.io/repository_$(TS)
+	gsutil -m rsync -r repository gs://www.qpm.io/repository
 
 .PHONY: default clean .all .protobuf
