@@ -11,6 +11,9 @@ before_install:
   - tar -xzvf v3.0.0-beta-1.tar.gz
   - if [ ! -d "$HOME/protobuf/lib" ]; then pushd protobuf-3.0.0-beta-1 && ./autogen.sh && ./configure --prefix=$HOME/protobuf && make && make install && popd; else echo 'Using cached directory.'; fi
 
+before_script:
+  - export PATH=$HOME/protobuf/bin:$PATH
+
 go:
   - 1.5
 
