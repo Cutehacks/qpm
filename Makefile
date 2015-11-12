@@ -50,4 +50,8 @@ repository: staging/packages
 	gsutil -m cp -r gs://www.qpm.io/repository gs://www.qpm.io/repository_$(TS)
 	gsutil -m rsync -r repository gs://www.qpm.io/repository
 
+downloads: $(BINARIES)
+	gsutil -m cp -r gs://www.qpm.io/download gs://www.qpm.io/download_$(TS)
+	gsutil -m rsync -x 'qpm|packager' -r bin gs://www.qpm.io/download/v$(VERSION)
+
 .PHONY: default clean .all .protobuf
