@@ -10,6 +10,7 @@ import (
 	msg "qpm.io/common/messages"
 	"strings"
 	"text/template"
+	"syscall"
 )
 
 const (
@@ -65,7 +66,7 @@ func PrintSearchResults(results []*msg.SearchResult) {
 		columnWidths[columnLicense] = 10
 	}
 
-	width, _, err := terminal.GetSize(0)
+	width, _, err := terminal.GetSize(int(syscall.Stdout))
 	if err != nil {
 		fmt.Printf("Couldn't get terminal width: %s\n", err.Error())
 		// gracefully fallback to something sensible
