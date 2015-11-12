@@ -2,8 +2,9 @@ language: go
 
 
 before_install:
-  - sudo apt-get update -qq
-  - sudo apt-get install -y protobuf-compiler
+  - wget https://github.com/google/protobuf/archive/v3.0.0-beta-1.tar.gz
+  - tar -xzvf v3.0.0-beta-1.tar.gz
+  - cd v3.0.0-beta-1 && ./configure --prefix=/usr && make && sudo make install
 
 go:
   - 1.5
