@@ -6,17 +6,18 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	msg "qpm.io/common/messages"
+	"qpm.io/qpm/core"
 	"text/template"
 	"time"
-	"qpm.io/qpm/core"
-	"strings"
+	"golang.org/x/net/context"
 )
 
 const (
-	packageName   = "io.qpm.cli"
-	stagingDir    = "packages"
-	repositoryDir = "repository"
-	qpmLicense    = "artistic-2.0"
+	packageName     = "io.qpm.cli"
+	stagingDir      = "packages"
+	repositoryDir   = "repository"
+	qpmLicense      = msg.LicenseType_ARTISTIC_2_0
 	licenseAddendum = `
 --------------------------
 
@@ -114,7 +115,7 @@ func copyBinary(src, dest string) error {
 	return d.Chmod(0755)
 }
 
-func writeText(filename,  text string) error {
+func writeText(filename, text string) error {
 	file, err := os.Create(filename)
 	if err != nil {
 		log.Fatalf("Could not create file %s: %s", filename, err.Error())
@@ -168,28 +169,41 @@ func main() {
 
 	pkg := &packageInfo{
 		Root:        packageName,
-		Version:     "0.0.1",
+		Version:     core.Version,
 		ReleaseDate: time.Now().Format("2006-01-02"),
 	}
 
 	rootMetaDir := newDir(filepath.Join(staging, packageName, "meta"))
 	newDir(filepath.Join(staging, packageName, "data"))
 
-	if err = writeTemplate(filepath.Join(rootMetaDir,"package.xml"), rootPackageXml, pkg); err != nil {
+	if err = writeTemplate(filepath.Join(rootMetaDir, "package.xml"), rootPackageXml, pkg); err != nil {
 		log.Fatalf("Could not generate package.xml for root %s", err.Error())
 	}
 
-	license, err := core.GetLicense(qpmLicense)
+	req := &msg.LicenseRequest{
+		Package: &msg.Package{
+			Name:        "qpm",
+			Description: "A package manager for Qt",
+			License: qpmLicense,
+			Version: &msg.Package_Version{
+				Label: core.Version,
+			},
+			Author: &msg.Package_Author{
+				Name:  "Cutehacks AS",
+			},
+		},
+	}
+
+	ctx := core.NewContext()
+
+	license, err := ctx.Client.GetLicense(context.Background(), req)
 	if err != nil {
 		log.Fatalf("Could not fetch license info:", err.Error())
 	}
 
-	licenseTxt := license.Body
-	licenseTxt = strings.Replace(licenseTxt, "[fullname]", "Cutehacks AS", -1)
-	licenseTxt = strings.Replace(licenseTxt, "[year]", time.Now().Format("2006"), -1)
-	licenseTxt +=  licenseAddendum
+	licenseTxt := license.Body + licenseAddendum
 
-	if err = writeText(filepath.Join(rootMetaDir,"license.txt"), licenseTxt); err != nil {
+	if err = writeText(filepath.Join(rootMetaDir, "license.txt"), licenseTxt); err != nil {
 		log.Fatalf("Could not generate license.txt for root %s", err.Error())
 	}
 
