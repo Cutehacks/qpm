@@ -18,6 +18,7 @@ publish source code (QML, JS, C++) components that can be compiled into Qt appli
 * [How it works](#how-it-works)
 * [Installing] (#installing)
   * [Download a binary](#download-a-binary)
+  * [Install from a package manager](#install-from-a-package-manager)
   * [Use Qt's Maintenance Tool](#use-qts-maintenance-tool)
   * [Compile from source](#compile-from-source)
 * [Usage for App Developers](#usage-for-app-developers)
@@ -68,11 +69,24 @@ This is included in the application (see below) and can used as normal.
 
 # Installing
 
-There are currently 3 ways to install the qpm client:
+There are currently 4 ways to install the qpm client:
 
 ## Download a binary
 
 The pre-compiled binaries can be downloaded from http://www.qpm.io.
+
+## Install from a package manager
+
+The goal is to make qpm available in the following desktop package managers:
+
+| Package Manager  | Status        | Command |
+| -------------    | ------------- | -------------
+| Homebrew         | Done          | `brew install qpm`  |
+| MacPorts         | Not started   |  |
+| Chocolately      | Not started   |  |
+| RPM              | Not started   |  |
+| Debian           | Not started   |  |
+| Pacman           | Not started   |  |
 
 ## Use Qt's Maintenance Tool
 
