@@ -10,6 +10,6 @@ Homepage: http://qpm.io
 
 Package: qpm
 Architecture: any
-Depends: golang
+Depends: 
 Description: A Package Manager for Qt
   
