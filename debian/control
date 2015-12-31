@@ -1,0 +1,15 @@
+Source: qpm
+Section: unknown
+Priority: extra
+Maintainer: Ben Lau <xbenlau@gmail.com>
+Build-Depends: debhelper (>= 8.0.0), golang
+Standards-Version: 3.9.2
+Homepage: http://qpm.io
+#Vcs-Git: git://git.debian.org/collab-maint/qpm.git
+#Vcs-Browser: http://git.debian.org/?p=collab-maint/qpm.git;a=summary
+
+Package: qpm
+Architecture: any
+Depends: golang
+Description: A Package Manager for Qt
+  
