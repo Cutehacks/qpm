@@ -115,7 +115,7 @@ it from working.
 * Ensure you have [Go](http://golang.org/) installed (tested with 1.4.2 and 1.5)
 * Clone this repository
 
-The qpm tool has it's dependencies stored in the repo as Git submodules so to initialize
+The qpm tool has its dependencies stored in the repo as Git submodules, so to initialize
 those you need to navigate to the root of the project and run:
 
 ```
@@ -189,7 +189,7 @@ qpm install
 ```
 
 With no arguments, this will install your dependent packages. Upon installing a new package, there
-will be a directory called `vendor` which contains the code for each package in it's own
+will be a directory called `vendor` which contains the code for each package in its own
 subdirectory. The vendor directory will also contain a file called `vendor.pri` which should be
 included in your applications .pro file like so:
 
