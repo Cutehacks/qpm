@@ -2,7 +2,7 @@ Source: qpm
 Section: unknown
 Priority: extra
 Maintainer: Ben Lau <xbenlau@gmail.com>
-Build-Depends: debhelper (>= 8.0.0), golang
+Build-Depends: debhelper (>= 8.0.0), golang-go
 Standards-Version: 3.9.2
 Homepage: http://qpm.io
 #Vcs-Git: git://git.debian.org/collab-maint/qpm.git
