@@ -49,7 +49,11 @@ func Prompt(prompt string, def string) chan string {
 func PromptPassword(prompt string) chan string {
 	replyChannel := make(chan string, 1)
 	fmt.Printf(prompt + " ")
-	replyChannel <- string(gopass.GetPasswd())
+	pass, err := gopass.GetPasswd()
+	if err == gopass.ErrInterrupted {
+		os.Exit(0) //SIGINT?
+	}
+	replyChannel <- string(pass)
 	return replyChannel
 }
 
