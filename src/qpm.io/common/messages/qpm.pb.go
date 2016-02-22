@@ -176,6 +176,7 @@ type Package struct {
 	Webpage      string              `protobuf:"bytes,10,opt,name=webpage" json:"webpage,omitempty"`
 	Plugins      []*Package_Plugin   `protobuf:"bytes,11,rep,name=plugins" json:"plugins,omitempty"`
 	Headers      []string            `protobuf:"bytes,12,rep,name=headers" json:"headers,omitempty"`
+	QbsFilename  string              `protobuf:"bytes,13,opt,name=qbs_filename" json:"qbs_filename,omitempty"`
 }
 
 func (m *Package) Reset()         { *m = Package{} }

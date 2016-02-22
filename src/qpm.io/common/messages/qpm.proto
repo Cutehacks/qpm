@@ -74,6 +74,7 @@ message Package {
 	string webpage = 10;
 	repeated Plugin plugins = 11;
 	repeated string headers = 12;
+	string qbs_filename = 13;
 }
 
 message Dependency {

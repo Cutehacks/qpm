@@ -227,6 +227,13 @@ func (pw PackageWrapper) PriFile() string {
 	return dotUnderscore(pw.Package.Name) + ".pri"
 }
 
+func (pw PackageWrapper) QbsFile() string {
+	if pw.QbsFilename != "" {
+		return pw.QbsFilename
+	}
+	return dotUnderscore(pw.Package.Name) + ".qbs"
+}
+
 func (pw PackageWrapper) QrcFile() string {
 	return dotUnderscore(pw.Package.Name) + ".qrc"
 }

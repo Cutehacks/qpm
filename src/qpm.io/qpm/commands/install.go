@@ -37,6 +37,15 @@ var packageFuncs = template.FuncMap{
 			return abs
 		}
 	},
+	"relQbsFile": func(vendorDir string, dep *common.PackageWrapper) string {
+		abs := filepath.Join(dep.RootDir(), dep.QbsFile())
+		rel, err := filepath.Rel(vendorDir, abs)
+		if err == nil {
+			return rel
+		} else {
+			return abs
+		}
+	},
 }
 
 var (
@@ -87,6 +96,27 @@ void init(const QCoreApplication &app, QQmlEngine &engine) {
     {{end}}
 }
 
+}
+`))
+	vendorQbs = template.Must(template.New("vendorQbs").Funcs(packageFuncs).Parse(`
+import qbs 1.0
+{{$vendirDir := .VendorDir}}
+Project {
+    references: [
+{{range $dep := .Dependencies}}
+        "{{relQbsFile $vendirDir $dep}}"
+{{end}}
+    ]
+    Product {
+        name: "vendor"
+        Export {
+{{range $dep := .Dependencies}}
+            Depends { name: "{{$dep.Name}}" }
+{{end}}  
+            Depends { name: "cpp" }
+			cpp.includePaths: ["."]
+        }
+    }
 }
 `))
 )
@@ -297,6 +327,10 @@ func (i *InstallCommand) postInstall() error {
 		i.Error(err)
 		return err
 	}
+	if err := GenerateVendorQbs(i.vendorDir, i.pkg); err != nil {
+		i.Error(err)
+		return err
+	}
 	return nil
 }
 
@@ -351,4 +385,32 @@ func GenerateVendorPri(vendorDir string, pkg *common.PackageWrapper) error {
 	}
 
 	return core.WriteTemplate(vendorPriFile, vendorPri, data)
+}
+
+// Generates a vendor.pri inside vendorDir using the information contained in the package file
+// and the dependencies
+func GenerateVendorQbs(vendorDir string, pkg *common.PackageWrapper) error {
+	depMap, err := common.LoadPackages(vendorDir)
+	if err != nil {
+		return err
+	}
+
+	var deps []*common.PackageWrapper
+	for _, dep := range depMap {
+		deps = append(deps, dep)
+	}
+
+	vendorQbsFile := filepath.Join(vendorDir, core.Vendor+".qbs")
+
+	data := struct {
+		VendorDir    string
+		Package      *common.PackageWrapper
+		Dependencies []*common.PackageWrapper
+	}{
+		vendorDir,
+		pkg,
+		deps,
+	}
+
+	return core.WriteTemplate(vendorQbsFile, vendorQbs, data)
 }
