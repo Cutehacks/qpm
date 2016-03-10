@@ -15,7 +15,7 @@ before_script:
   - export PATH=$HOME/protobuf/bin:$PATH
 
 go:
-  - 1.5
+  - 1.6
 
 env:
     - GIMME_OS=linux GIMME_ARCH=amd64
