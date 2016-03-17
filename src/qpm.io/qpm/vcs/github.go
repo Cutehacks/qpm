@@ -229,7 +229,7 @@ func extract(fileName string, destination string) (*common.PackageWrapper, error
 
 		switch header.Typeflag {
 		case tar.TypeDir:
-			tokens := strings.Split(header.Name, string(filepath.Separator))
+			tokens := strings.Split(header.Name, "/")
 			topDir = tokens[0]
 			err = os.MkdirAll(filename, os.FileMode(header.Mode)) // or use 0755
 			if err != nil {
