@@ -28,6 +28,15 @@ var packageFuncs = template.FuncMap{
 			return abs
 		}
 	},
+	"relHeaderFile": func(vendorDir string, dep *common.PackageWrapper, headerFile string) string {
+		abs := filepath.Join(dep.RootDir(), headerFile)
+		rel, err := filepath.Rel(vendorDir, abs)
+		if err == nil {
+			return rel
+		} else {
+			return abs
+		}
+	},
 }
 
 var (
@@ -39,9 +48,46 @@ DEFINES += QPM_INIT\\(E\\)=\"E.addImportPath(QStringLiteral(\\\"qrc:/\\\"));\"
 DEFINES += QPM_USE_NS
 INCLUDEPATH += $$PWD
 QML_IMPORT_PATH += $$PWD
+HEADERS += $$PWD/vendor.h
 {{$vendirDir := .VendorDir}}
 {{range $dep := .Dependencies}}
 include($$PWD/{{relPriFile $vendirDir $dep}}){{end}}
+`))
+)
+
+var (
+	// This template is very dense to avoid excessive whitespace in the generated code.
+	// We can address this in a future version of Go (1.6?):
+	// https://github.com/golang/go/commit/e6ee26a03b79d0e8b658463bdb29349ca68e1460
+	vendorHeader = template.Must(template.New("vendorHeader").Funcs(packageFuncs).Parse(`
+#include <QQmlEngine>
+#include <QCoreApplication>
+
+{{$vendirDir := .VendorDir}}
+{{range $dep := .Dependencies}}
+{{range $header := $dep.Package.Headers}}
+#include "{{relHeaderFile $vendirDir $dep $header}}"
+{{end}}
+{{end}}
+
+namespace qpm {
+
+void init(const QCoreApplication &app, QQmlEngine &engine) {
+    // Add qml components
+    engine.addImportPath(QStringLiteral("qrc:/"));
+
+    // Add C++ components
+    {{range $dep := .Dependencies}}
+    {{range $plugin := $dep.Package.Plugins}}
+    // {{$plugin}}
+    {{$plugin.Class}} pluginInstance_{{$plugin.Class}};
+    pluginInstance_{{$plugin.Class}}.registerTypes("{{$plugin.Uri}}");
+    pluginInstance_{{$plugin.Class}}.initializeEngine(&engine, "{{$plugin.Uri}}");
+    {{end}}
+    {{end}}
+}
+
+}
 `))
 )
 
@@ -247,7 +293,36 @@ func (i *InstallCommand) postInstall() error {
 		i.Error(err)
 		return err
 	}
+	if err := GenerateVendorHeader(i.vendorDir, i.pkg); err != nil {
+		i.Error(err)
+		return err
+	}
 	return nil
+}
+
+func GenerateVendorHeader(vendorDir string, pkg *common.PackageWrapper) error {
+	depMap, err := common.LoadPackages(vendorDir)
+	if err != nil {
+		return err
+	}
+
+	var deps []*common.PackageWrapper
+	for _, dep := range depMap {
+		deps = append(deps, dep)
+	}
+
+	vendorHeaderFile := filepath.Join(vendorDir, core.Vendor+".h")
+
+	data := struct {
+		VendorDir    string
+		Package      *common.PackageWrapper
+		Dependencies []*common.PackageWrapper
+	}{
+		vendorDir,
+		pkg,
+		deps,
+	}
+	return core.WriteTemplate(vendorHeaderFile, vendorHeader, data)
 }
 
 // Generates a vendor.pri inside vendorDir using the information contained in the package file

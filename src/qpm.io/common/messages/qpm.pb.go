@@ -174,6 +174,8 @@ type Package struct {
 	License      LicenseType         `protobuf:"varint,7,opt,name=license,enum=messages.LicenseType" json:"license,omitempty"`
 	PriFilename  string              `protobuf:"bytes,8,opt,name=pri_filename" json:"pri_filename,omitempty"`
 	Webpage      string              `protobuf:"bytes,10,opt,name=webpage" json:"webpage,omitempty"`
+	Plugins      []*Package_Plugin   `protobuf:"bytes,11,rep,name=plugins" json:"plugins,omitempty"`
+	Headers      []string            `protobuf:"bytes,12,rep,name=headers" json:"headers,omitempty"`
 }
 
 func (m *Package) Reset()         { *m = Package{} }
@@ -197,6 +199,13 @@ func (m *Package) GetRepository() *Package_Repository {
 func (m *Package) GetVersion() *Package_Version {
 	if m != nil {
 		return m.Version
+	}
+	return nil
+}
+
+func (m *Package) GetPlugins() []*Package_Plugin {
+	if m != nil {
+		return m.Plugins
 	}
 	return nil
 }
@@ -228,6 +237,15 @@ type Package_Author struct {
 func (m *Package_Author) Reset()         { *m = Package_Author{} }
 func (m *Package_Author) String() string { return proto.CompactTextString(m) }
 func (*Package_Author) ProtoMessage()    {}
+
+type Package_Plugin struct {
+	Class string `protobuf:"bytes,1,opt,name=class" json:"class,omitempty"`
+	Uri   string `protobuf:"bytes,2,opt,name=uri" json:"uri,omitempty"`
+}
+
+func (m *Package_Plugin) Reset()         { *m = Package_Plugin{} }
+func (m *Package_Plugin) String() string { return proto.CompactTextString(m) }
+func (*Package_Plugin) ProtoMessage()    {}
 
 type Dependency struct {
 	Name       string              `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
@@ -488,6 +506,7 @@ func init() {
 	proto.RegisterType((*Package_Repository)(nil), "messages.Package.Repository")
 	proto.RegisterType((*Package_Version)(nil), "messages.Package.Version")
 	proto.RegisterType((*Package_Author)(nil), "messages.Package.Author")
+	proto.RegisterType((*Package_Plugin)(nil), "messages.Package.Plugin")
 	proto.RegisterType((*Dependency)(nil), "messages.Dependency")
 	proto.RegisterType((*VersionInfo)(nil), "messages.VersionInfo")
 	proto.RegisterType((*SearchResult)(nil), "messages.SearchResult")
