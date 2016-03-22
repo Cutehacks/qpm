@@ -57,6 +57,11 @@ message Package {
 		string name = 1;
 		string email = 2;
 	}
+	
+	message Plugin {
+		string class = 1;
+		string uri = 2;
+	}
 
 	string name = 1;
 	string description = 2;
@@ -67,6 +72,9 @@ message Package {
 	LicenseType license = 7;
 	string pri_filename = 8;
 	string webpage = 10;
+	repeated Plugin plugins = 11;
+	repeated string headers = 12;
+	string qbs_filename = 13;
 }
 
 message Dependency {
