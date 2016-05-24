@@ -5,6 +5,8 @@ package messages;
 enum RepoType {
 	AUTO = 0;
 	GITHUB = 1;
+	GIT = 2;
+	MERCURIAL = 3;
 }
 
 // The values in this enum should correspond to an SPDX identifier

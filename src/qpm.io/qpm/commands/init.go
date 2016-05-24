@@ -8,17 +8,18 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"github.com/howeyc/gopass"
-	"golang.org/x/net/context"
 	"os"
 	"path/filepath"
+	"regexp"
+	"strings"
+	"text/template"
+
+	"github.com/howeyc/gopass"
+	"golang.org/x/net/context"
 	"qpm.io/common"
 	msg "qpm.io/common/messages"
 	"qpm.io/qpm/core"
 	"qpm.io/qpm/vcs"
-	"regexp"
-	"strings"
-	"text/template"
 )
 
 var regexGitHubLicense = regexp.MustCompile("[-\\.]")
@@ -94,10 +95,22 @@ func (ic *InitCommand) Run() error {
 
 	ic.Pkg = &common.PackageWrapper{Package: common.NewPackage()}
 
-	ic.Pkg.Author.Name, _ = vcs.LastCommitAuthorName()
+	if t, err := vcs.RepoType(); err != nil {
+		fmt.Println("WARNING: Could not auto-detect repository type.")
+	} else {
+		ic.Pkg.Repository.Type = t
+	}
+
+	publisher, err := vcs.CreatePublisher(ic.Pkg.Repository)
+	if err != nil {
+		ic.Error(err)
+		return err
+	}
+
+	ic.Pkg.Author.Name, _ = publisher.LastCommitAuthorName()
 	ic.Pkg.Author.Name, _ = <-Prompt("Your name:", ic.Pkg.Author.Name)
 
-	ic.Pkg.Author.Email, _ = vcs.LastCommitEmail()
+	ic.Pkg.Author.Email, _ = publisher.LastCommitEmail()
 	ic.Pkg.Author.Email = <-Prompt("Your email:", ic.Pkg.Author.Email)
 
 	cwd, err := os.Getwd()
@@ -113,7 +126,7 @@ func (ic *InitCommand) Run() error {
 	ic.Pkg.Name = <-Prompt("Unique package name:", suggestedName)
 	ic.Pkg.Version.Label = <-Prompt("Initial version:", ic.Pkg.Version.Label)
 
-	ic.Pkg.Repository.Url, err = vcs.RepositoryURL()
+	ic.Pkg.Repository.Url, err = publisher.RepositoryURL()
 	if err != nil {
 		fmt.Println("WARNING: Could not auto-detect repository URL.")
 	}

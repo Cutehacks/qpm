@@ -7,6 +7,7 @@ import (
 	"flag"
 	"fmt"
 	"strings"
+
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -107,13 +108,18 @@ func (p *PublishCommand) Run() error {
 		p.Fatal("Cannot read " + core.PackageFile + ": " + err.Error())
 	}
 
-	wrapper.Version.Revision, err = vcs.LastCommitSHA1()
+	publisher, err := vcs.CreatePublisher(wrapper.Repository)
+	if err != nil {
+		p.Fatal("Cannot find VCS: " + err.Error())
+	}
+
+	wrapper.Version.Revision, err = publisher.LastCommitRevision()
 
 	if err != nil {
 		p.Fatal("Cannot get the last commit SHA1: " + err.Error())
 	}
 
-	if err := vcs.ValidateCommit(wrapper.Version.Revision); err != nil {
+	if err := publisher.ValidateCommit(wrapper.Version.Revision); err != nil {
 		p.Fatal(err.Error())
 	}
 
@@ -129,7 +135,7 @@ func (p *PublishCommand) Run() error {
 
 	tag := <-Prompt("Tag release:", "Y/n")
 	if len(tag) == 0 || strings.ToLower(string(tag[0])) == "y" {
-		vcs.Tag("qpm/" + wrapper.Version.Label)
+		publisher.CreateTag("qpm/" + wrapper.Version.Label)
 	}
 
 	fmt.Println("SUCCESS!")

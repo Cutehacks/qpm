@@ -6,16 +6,17 @@ package commands
 import (
 	"flag"
 	"fmt"
-	"golang.org/x/net/context"
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
+	"text/template"
+
+	"golang.org/x/net/context"
 	"qpm.io/common"
 	msg "qpm.io/common/messages"
 	"qpm.io/qpm/core"
 	"qpm.io/qpm/vcs"
-	"strings"
-	"text/template"
 )
 
 var packageFuncs = template.FuncMap{
@@ -201,7 +202,13 @@ func (i *InstallCommand) install(d *msg.Dependency) (*common.PackageWrapper, err
 	signature := strings.Join([]string{d.Name, d.Version.Label}, "@")
 	fmt.Println("Installing", signature)
 
-	pkg, err := vcs.Install(d, i.vendorDir)
+	installer, err := vcs.CreateInstaller(d.Repository)
+	if err != nil {
+		i.Error(err)
+		return nil, err
+	}
+
+	pkg, err := installer.Install(d.Repository, d.Version, i.vendorDir)
 	if err != nil {
 		i.Error(err)
 		return nil, err

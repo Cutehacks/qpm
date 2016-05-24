@@ -4,32 +4,34 @@
 package commands
 
 import (
-	"fmt"
-	"flag"
-	"io"
-	"os"
 	"bytes"
-	"strings"
-	"sort"
-	"path/filepath"
 	"crypto/sha256"
 	"encoding/hex"
+	"flag"
+	"fmt"
+	"io"
+	"os"
+	"path/filepath"
+	"sort"
+	"strings"
+
 	"golang.org/x/crypto/openpgp"
 	"golang.org/x/crypto/openpgp/packet"
-	"qpm.io/qpm/core"
 	"qpm.io/common"
+	msg "qpm.io/common/messages"
+	"qpm.io/qpm/core"
 	"qpm.io/qpm/vcs"
 )
 
 type SignCommand struct {
 	BaseCommand
-	pkg *common.PackageWrapper
+	pkg   *common.PackageWrapper
 	paths []string
 }
 
 func NewSignCommand(ctx core.Context) *SignCommand {
 	return &SignCommand{
-		BaseCommand: BaseCommand {
+		BaseCommand: BaseCommand{
 			Ctx: ctx,
 		},
 	}
@@ -39,11 +41,11 @@ func (s SignCommand) Description() string {
 	return "Creates a PGP signature for the package (experimental)"
 }
 
-func (s * SignCommand) RegisterFlags(flags *flag.FlagSet) {
+func (s *SignCommand) RegisterFlags(flags *flag.FlagSet) {
 
 }
 
-func (s * SignCommand) Run() error {
+func (s *SignCommand) Run() error {
 
 	var err error
 	s.pkg, err = common.LoadPackage("")
@@ -54,7 +56,7 @@ func (s * SignCommand) Run() error {
 
 	// Hash the repo
 
-	hash, err := hashRepo()
+	hash, err := hashRepo(s.pkg.Repository)
 	if err != nil {
 		s.Error(err)
 		return err
@@ -171,9 +173,14 @@ func HashPaths(paths []string) (string, error) {
 	return hex.EncodeToString(result), nil
 }
 
-func hashRepo() (string, error) {
+func hashRepo(repository *msg.Package_Repository) (string, error) {
 
-	paths, err := vcs.RepositoryFileList()
+	publisher, err := vcs.CreatePublisher(repository)
+	if err != nil {
+		return "", err
+	}
+
+	paths, err := publisher.RepositoryFileList()
 	if err != nil {
 		return "", err
 	}
@@ -183,7 +190,7 @@ func hashRepo() (string, error) {
 
 // PGP signing
 
-func decryptEntity(entity * openpgp.Entity) error {
+func decryptEntity(entity *openpgp.Entity) error {
 
 	passwd := <-PromptPassword("Password:")
 	err := entity.PrivateKey.Decrypt([]byte(passwd))

@@ -50,17 +50,23 @@ var _ = math.Inf
 type RepoType int32
 
 const (
-	RepoType_AUTO   RepoType = 0
-	RepoType_GITHUB RepoType = 1
+	RepoType_AUTO      RepoType = 0
+	RepoType_GITHUB    RepoType = 1
+	RepoType_GIT       RepoType = 2
+	RepoType_MERCURIAL RepoType = 3
 )
 
 var RepoType_name = map[int32]string{
 	0: "AUTO",
 	1: "GITHUB",
+	2: "GIT",
+	3: "MERCURIAL",
 }
 var RepoType_value = map[string]int32{
-	"AUTO":   0,
-	"GITHUB": 1,
+	"AUTO":      0,
+	"GITHUB":    1,
+	"GIT":       2,
+	"MERCURIAL": 3,
 }
 
 func (x RepoType) String() string {
