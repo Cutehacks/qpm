@@ -208,7 +208,8 @@ func (i *InstallCommand) install(d *msg.Dependency) (*common.PackageWrapper, err
 		return nil, err
 	}
 
-	pkg, err := installer.Install(d.Repository, d.Version, i.vendorDir)
+	destination := i.vendorDir + string(filepath.Separator) + strings.Replace(d.Name, ".", string(filepath.Separator), -1)
+	pkg, err := installer.Install(d.Repository, d.Version, destination)
 	if err != nil {
 		i.Error(err)
 		return nil, err

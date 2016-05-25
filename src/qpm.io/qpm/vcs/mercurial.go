@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"strings"
 
 	"qpm.io/common"
@@ -22,21 +21,18 @@ func NewMercurial() *Mercurial {
 }
 
 func (m *Mercurial) Install(repository *msg.Package_Repository, version *msg.Package_Version, destination string) (*common.PackageWrapper, error) {
-	repo := strings.TrimSuffix(repository.Url, "/hg")
-	tokens := strings.Split(repo, "/")
-	path := destination + string(filepath.Separator) + tokens[len(tokens)-2] + string(filepath.Separator) + tokens[len(tokens)-1]
 
-	err := os.RemoveAll(path)
+	err := os.RemoveAll(destination)
 	if err != nil {
 		return nil, err
 	}
 
-	err = m.cloneRepository(repository.Url, version.Revision, path)
+	err = m.cloneRepository(repository.Url, version.Revision, destination)
 	if err != nil {
 		return nil, err
 	}
 
-	return common.LoadPackage(path)
+	return common.LoadPackage(destination)
 }
 
 func (m *Mercurial) Test() error {

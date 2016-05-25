@@ -17,15 +17,18 @@ type Installer interface {
 }
 
 func CreateInstaller(repository *msg.Package_Repository) (Installer, error) {
-	// TODO: add support for Mercurial
+
 	switch repository.Type {
 	case msg.RepoType_GIT:
 		git := NewGit()
 		if err := git.Test(); err == nil {
 			return git, nil
 		}
-		fallthrough
 	case msg.RepoType_GITHUB:
+		git := NewGit()
+		if err := git.Test(); err == nil {
+			return git, nil
+		}
 		return NewGitHub(), nil
 	case msg.RepoType_MERCURIAL:
 		hg := NewMercurial()
@@ -33,7 +36,8 @@ func CreateInstaller(repository *msg.Package_Repository) (Installer, error) {
 			return hg, nil
 		}
 	}
-	return nil, fmt.Errorf("Repository type %d is not supported", repository.Type)
+
+	return nil, fmt.Errorf("Repository type %s is not supported", msg.RepoType_name[int32(repository.Type)])
 }
 
 // Publisher - generic interface to VCS functionality need to publish packages
@@ -49,7 +53,7 @@ type Publisher interface {
 }
 
 func CreatePublisher(repository *msg.Package_Repository) (Publisher, error) {
-	// TODO: add support for Mercurial
+
 	switch repository.Type {
 	case msg.RepoType_GIT:
 		fallthrough
@@ -66,7 +70,8 @@ func CreatePublisher(repository *msg.Package_Repository) (Publisher, error) {
 		}
 		return hg, nil
 	}
-	return nil, fmt.Errorf("Repository type %d is not supported", repository.Type)
+
+	return nil, fmt.Errorf("Repository type %s is not supported", msg.RepoType_name[int32(repository.Type)])
 }
 
 func exists(path string) (bool, error) {

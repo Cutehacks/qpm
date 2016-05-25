@@ -32,12 +32,23 @@ func NewGitHub() *GitHub {
 }
 
 func (g *GitHub) Install(repository *msg.Package_Repository, version *msg.Package_Version, destination string) (*common.PackageWrapper, error) {
-	fileName, err := g.download(repository, version, destination)
+
+	destinationTokens := strings.Split(destination, "/")
+	destinationSuffix := destinationTokens[len(destinationTokens)-1]
+	fileDestination := strings.TrimSuffix(destination, destinationSuffix)
+
+	os.RemoveAll(destination)
+
+	if err := os.MkdirAll(fileDestination, 0755); err != nil {
+		return nil, err
+	}
+
+	fileName, err := g.download(repository, version, fileDestination)
 	if err != nil {
 		return nil, err
 	}
 
-	pkg, err := g.extract(fileName, destination)
+	pkg, err := g.extract(fileName, fileDestination, destinationSuffix)
 	if err != nil {
 		return nil, err
 	}
@@ -59,8 +70,9 @@ func (g *GitHub) download(repository *msg.Package_Repository, version *msg.Packa
 	}
 
 	url := GitHubURL + "/" + repo + "/" + Tarball + "/" + version.Revision
-	tokens := strings.Split(url, "/")
-	fileName = destination + string(filepath.Separator) + tokens[len(tokens)-2] + TarSuffix // FIXME: we assume it's a tarball
+	urlTokens := strings.Split(url, "/")
+
+	fileName = destination + string(filepath.Separator) + urlTokens[len(urlTokens)-1] + TarSuffix // FIXME: we assume it's a tarball
 
 	var output *os.File
 	output, err = os.Create(fileName)
@@ -101,7 +113,7 @@ func (g *GitHub) download(repository *msg.Package_Repository, version *msg.Packa
 	return fileName, nil
 }
 
-func (g *GitHub) extract(fileName string, destination string) (*common.PackageWrapper, error) {
+func (g *GitHub) extract(fileName string, destination string, suffix string) (*common.PackageWrapper, error) {
 
 	file, err := os.Open(fileName)
 
@@ -173,13 +185,7 @@ func (g *GitHub) extract(fileName string, destination string) (*common.PackageWr
 			return pkg, err
 		}
 
-		path := filepath.Join(destination, pkg.QrcPrefix())
-
-		if err = os.MkdirAll(path, 0755); err != nil {
-			return pkg, err
-		}
-
-		os.RemoveAll(path)
+		path := filepath.Join(destination, suffix)
 
 		if err = os.Rename(src, path); err != nil {
 			return pkg, err
