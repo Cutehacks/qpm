@@ -1,15 +1,15 @@
-[submodule "src/github.com/golang/protobuf"]
-	path = src/github.com/golang/protobuf
+[submodule "protobuf"]
+	path = vendor/github.com/golang/protobuf
 	url = https://github.com/golang/protobuf.git
-[submodule "src/golang.org/x/net"]
-	path = src/golang.org/x/net
+[submodule "net"]
+	path = vendor/golang.org/x/net
 	url = https://go.googlesource.com/net
-[submodule "src/google.golang.org/grpc"]
-	path = src/google.golang.org/grpc
+[submodule "grpc"]
+	path = vendor/google.golang.org/grpc
 	url = https://github.com/grpc/grpc-go
-[submodule "src/github.com/howeyc/gopass"]
-	path = src/github.com/howeyc/gopass
+[submodule "gopass"]
+	path = vendor/github.com/howeyc/gopass
 	url = https://github.com/howeyc/gopass
-[submodule "src/golang.org/x/crypto"]
-	path = src/golang.org/x/crypto
+[submodule "crypto"]
+	path = vendor/golang.org/x/crypto
 	url = https://go.googlesource.com/crypto
