@@ -9,8 +9,8 @@ import (
 	"os"
 	msg "qpm.io/common/messages"
 	"strings"
-	"text/template"
 	"syscall"
+	"text/template"
 )
 
 const (

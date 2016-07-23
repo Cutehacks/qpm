@@ -4,30 +4,30 @@
 package commands
 
 import (
-	"fmt"
-	"flag"
 	"bytes"
-	"strings"
-	"os"
 	"crypto"
-	"io/ioutil"
-	"path/filepath"
-	"golang.org/x/crypto/openpgp/packet"
+	"flag"
+	"fmt"
 	"golang.org/x/crypto/openpgp/armor"
-	"qpm.io/qpm/core"
+	"golang.org/x/crypto/openpgp/packet"
+	"io/ioutil"
+	"os"
+	"path/filepath"
 	"qpm.io/common"
+	"qpm.io/qpm/core"
+	"strings"
 )
 
 type VerifyCommand struct {
 	BaseCommand
-	pkg *common.PackageWrapper
-	fs  *flag.FlagSet
+	pkg   *common.PackageWrapper
+	fs    *flag.FlagSet
 	paths []string
 }
 
 func NewVerifyCommand(ctx core.Context) *VerifyCommand {
-	return &VerifyCommand {
-		BaseCommand: BaseCommand {
+	return &VerifyCommand{
+		BaseCommand: BaseCommand{
 			Ctx: ctx,
 		},
 	}
@@ -37,11 +37,11 @@ func (v VerifyCommand) Description() string {
 	return "Verifies the package PGP signature (experimental)"
 }
 
-func (v * VerifyCommand) RegisterFlags(flags *flag.FlagSet) {
+func (v *VerifyCommand) RegisterFlags(flags *flag.FlagSet) {
 	v.fs = flags
 }
 
-func (v * VerifyCommand) Run() error {
+func (v *VerifyCommand) Run() error {
 
 	var path string
 	if v.fs.NArg() > 0 {
@@ -98,7 +98,7 @@ func (v * VerifyCommand) Run() error {
 	return nil
 }
 
-func (v * VerifyCommand) visit(path string, f os.FileInfo, err error) error {
+func (v *VerifyCommand) visit(path string, f os.FileInfo, err error) error {
 
 	if f.IsDir() {
 		if strings.HasPrefix(f.Name(), ".git") {
@@ -110,7 +110,7 @@ func (v * VerifyCommand) visit(path string, f os.FileInfo, err error) error {
 	return nil
 }
 
-func (v * VerifyCommand) hashTree(directory string) (string, error) {
+func (v *VerifyCommand) hashTree(directory string) (string, error) {
 
 	v.paths = []string{}
 
@@ -122,7 +122,7 @@ func (v * VerifyCommand) hashTree(directory string) (string, error) {
 	return HashPaths(v.paths)
 }
 
-func Verify(payload string, signature []byte, pubkey *packet.PublicKey) (error) {
+func Verify(payload string, signature []byte, pubkey *packet.PublicKey) error {
 
 	// decode and read the signature
 

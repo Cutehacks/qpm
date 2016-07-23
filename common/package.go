@@ -7,13 +7,13 @@ import (
 	//	"crypto/x509/pkix"
 	//	"debug/elf"
 	"fmt"
-	"os"
-	msg "qpm.io/common/messages"
 	json "github.com/golang/protobuf/jsonpb"
+	"os"
+	"path/filepath"
+	msg "qpm.io/common/messages"
 	"qpm.io/qpm/core"
 	"regexp"
 	"strings"
-	"path/filepath"
 )
 
 const (
@@ -67,7 +67,7 @@ func NewPackage() *msg.Package {
 		Name:        "",
 		Description: "",
 		Version: &msg.Package_Version{
-			Label: "0.0.1",
+			Label:       "0.0.1",
 			Fingerprint: "",
 		},
 		Author: &msg.Package_Author{
@@ -85,15 +85,13 @@ func NewPackage() *msg.Package {
 
 type PackageWrapper struct {
 	*msg.Package
-	ID int // only used on server
+	ID       int // only used on server
 	FilePath string
 }
 
 func NewPackageWrapper(file string) *PackageWrapper {
 	return &PackageWrapper{
-		Package: &msg.Package{
-
-		},
+		Package:  &msg.Package{},
 		FilePath: file,
 	}
 }
@@ -160,7 +158,7 @@ func (pw PackageWrapper) Save() error {
 
 	marshaller := &json.Marshaler{
 		EnumsAsInts: false,
-		Indent: "  ",
+		Indent:      "  ",
 	}
 	return marshaller.Marshal(file, pw.Package)
 }

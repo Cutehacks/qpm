@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"golang.org/x/net/context"
 	"io"
 	"log"
 	"os"
@@ -10,7 +11,6 @@ import (
 	"qpm.io/qpm/core"
 	"text/template"
 	"time"
-	"golang.org/x/net/context"
 )
 
 const (
@@ -184,12 +184,12 @@ func main() {
 		Package: &msg.Package{
 			Name:        "qpm",
 			Description: "A package manager for Qt",
-			License: qpmLicense,
+			License:     qpmLicense,
 			Version: &msg.Package_Version{
 				Label: core.Version,
 			},
 			Author: &msg.Package_Author{
-				Name:  "Cutehacks AS",
+				Name: "Cutehacks AS",
 			},
 		},
 	}
