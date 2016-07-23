@@ -10,8 +10,12 @@ import (
 	"runtime"
 )
 
+var (
+	Version = "0.10.0"
+	Build   = ""
+)
+
 const (
-	Version       = "0.10.0"
 	PackageFile   = "qpm.json"
 	SignatureFile = "qpm.asc"
 	Vendor        = "vendor"
