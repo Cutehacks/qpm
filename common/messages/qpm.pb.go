@@ -47,6 +47,12 @@ var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
 
+// This is a compile-time assertion to ensure that this generated file
+// is compatible with the proto package it is being compiled against.
+// A compilation error at this line likely means your copy of the
+// proto package needs to be updated.
+const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
+
 type RepoType int32
 
 const (
@@ -72,6 +78,7 @@ var RepoType_value = map[string]int32{
 func (x RepoType) String() string {
 	return proto.EnumName(RepoType_name, int32(x))
 }
+func (RepoType) EnumDescriptor() ([]byte, []int) { return fileDescriptor0, []int{0} }
 
 // The values in this enum should correspond to an SPDX identifier
 type LicenseType int32
@@ -135,6 +142,7 @@ var LicenseType_value = map[string]int32{
 func (x LicenseType) String() string {
 	return proto.EnumName(LicenseType_name, int32(x))
 }
+func (LicenseType) EnumDescriptor() ([]byte, []int) { return fileDescriptor0, []int{1} }
 
 type MessageType int32
 
@@ -158,6 +166,7 @@ var MessageType_value = map[string]int32{
 func (x MessageType) String() string {
 	return proto.EnumName(MessageType_name, int32(x))
 }
+func (MessageType) EnumDescriptor() ([]byte, []int) { return fileDescriptor0, []int{2} }
 
 type DependencyMessage struct {
 	Type   MessageType `protobuf:"varint,1,opt,name=type,enum=messages.MessageType" json:"type,omitempty"`
@@ -166,9 +175,10 @@ type DependencyMessage struct {
 	Prompt bool        `protobuf:"varint,4,opt,name=prompt" json:"prompt,omitempty"`
 }
 
-func (m *DependencyMessage) Reset()         { *m = DependencyMessage{} }
-func (m *DependencyMessage) String() string { return proto.CompactTextString(m) }
-func (*DependencyMessage) ProtoMessage()    {}
+func (m *DependencyMessage) Reset()                    { *m = DependencyMessage{} }
+func (m *DependencyMessage) String() string            { return proto.CompactTextString(m) }
+func (*DependencyMessage) ProtoMessage()               {}
+func (*DependencyMessage) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{0} }
 
 type Package struct {
 	Name         string              `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
@@ -178,13 +188,14 @@ type Package struct {
 	Version      *Package_Version    `protobuf:"bytes,5,opt,name=version" json:"version,omitempty"`
 	Dependencies []string            `protobuf:"bytes,6,rep,name=dependencies" json:"dependencies,omitempty"`
 	License      LicenseType         `protobuf:"varint,7,opt,name=license,enum=messages.LicenseType" json:"license,omitempty"`
-	PriFilename  string              `protobuf:"bytes,8,opt,name=pri_filename" json:"pri_filename,omitempty"`
+	PriFilename  string              `protobuf:"bytes,8,opt,name=pri_filename,json=priFilename" json:"pri_filename,omitempty"`
 	Webpage      string              `protobuf:"bytes,10,opt,name=webpage" json:"webpage,omitempty"`
 }
 
-func (m *Package) Reset()         { *m = Package{} }
-func (m *Package) String() string { return proto.CompactTextString(m) }
-func (*Package) ProtoMessage()    {}
+func (m *Package) Reset()                    { *m = Package{} }
+func (m *Package) String() string            { return proto.CompactTextString(m) }
+func (*Package) ProtoMessage()               {}
+func (*Package) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{1} }
 
 func (m *Package) GetAuthor() *Package_Author {
 	if m != nil {
@@ -212,9 +223,10 @@ type Package_Repository struct {
 	Url  string   `protobuf:"bytes,2,opt,name=url" json:"url,omitempty"`
 }
 
-func (m *Package_Repository) Reset()         { *m = Package_Repository{} }
-func (m *Package_Repository) String() string { return proto.CompactTextString(m) }
-func (*Package_Repository) ProtoMessage()    {}
+func (m *Package_Repository) Reset()                    { *m = Package_Repository{} }
+func (m *Package_Repository) String() string            { return proto.CompactTextString(m) }
+func (*Package_Repository) ProtoMessage()               {}
+func (*Package_Repository) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{1, 0} }
 
 type Package_Version struct {
 	Label       string `protobuf:"bytes,1,opt,name=label" json:"label,omitempty"`
@@ -222,18 +234,20 @@ type Package_Version struct {
 	Fingerprint string `protobuf:"bytes,3,opt,name=fingerprint" json:"fingerprint,omitempty"`
 }
 
-func (m *Package_Version) Reset()         { *m = Package_Version{} }
-func (m *Package_Version) String() string { return proto.CompactTextString(m) }
-func (*Package_Version) ProtoMessage()    {}
+func (m *Package_Version) Reset()                    { *m = Package_Version{} }
+func (m *Package_Version) String() string            { return proto.CompactTextString(m) }
+func (*Package_Version) ProtoMessage()               {}
+func (*Package_Version) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{1, 1} }
 
 type Package_Author struct {
 	Name  string `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
 	Email string `protobuf:"bytes,2,opt,name=email" json:"email,omitempty"`
 }
 
-func (m *Package_Author) Reset()         { *m = Package_Author{} }
-func (m *Package_Author) String() string { return proto.CompactTextString(m) }
-func (*Package_Author) ProtoMessage()    {}
+func (m *Package_Author) Reset()                    { *m = Package_Author{} }
+func (m *Package_Author) String() string            { return proto.CompactTextString(m) }
+func (*Package_Author) ProtoMessage()               {}
+func (*Package_Author) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{1, 2} }
 
 type Dependency struct {
 	Name       string              `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
@@ -241,9 +255,10 @@ type Dependency struct {
 	Version    *Package_Version    `protobuf:"bytes,3,opt,name=version" json:"version,omitempty"`
 }
 
-func (m *Dependency) Reset()         { *m = Dependency{} }
-func (m *Dependency) String() string { return proto.CompactTextString(m) }
-func (*Dependency) ProtoMessage()    {}
+func (m *Dependency) Reset()                    { *m = Dependency{} }
+func (m *Dependency) String() string            { return proto.CompactTextString(m) }
+func (*Dependency) ProtoMessage()               {}
+func (*Dependency) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{2} }
 
 func (m *Dependency) GetRepository() *Package_Repository {
 	if m != nil {
@@ -261,12 +276,13 @@ func (m *Dependency) GetVersion() *Package_Version {
 
 type VersionInfo struct {
 	Version       *Package_Version `protobuf:"bytes,1,opt,name=version" json:"version,omitempty"`
-	DatePublished string           `protobuf:"bytes,2,opt,name=date_published" json:"date_published,omitempty"`
+	DatePublished string           `protobuf:"bytes,2,opt,name=date_published,json=datePublished" json:"date_published,omitempty"`
 }
 
-func (m *VersionInfo) Reset()         { *m = VersionInfo{} }
-func (m *VersionInfo) String() string { return proto.CompactTextString(m) }
-func (*VersionInfo) ProtoMessage()    {}
+func (m *VersionInfo) Reset()                    { *m = VersionInfo{} }
+func (m *VersionInfo) String() string            { return proto.CompactTextString(m) }
+func (*VersionInfo) ProtoMessage()               {}
+func (*VersionInfo) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{3} }
 
 func (m *VersionInfo) GetVersion() *Package_Version {
 	if m != nil {
@@ -283,9 +299,10 @@ type SearchResult struct {
 	License     LicenseType     `protobuf:"varint,5,opt,name=license,enum=messages.LicenseType" json:"license,omitempty"`
 }
 
-func (m *SearchResult) Reset()         { *m = SearchResult{} }
-func (m *SearchResult) String() string { return proto.CompactTextString(m) }
-func (*SearchResult) ProtoMessage()    {}
+func (m *SearchResult) Reset()                    { *m = SearchResult{} }
+func (m *SearchResult) String() string            { return proto.CompactTextString(m) }
+func (*SearchResult) ProtoMessage()               {}
+func (*SearchResult) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{4} }
 
 func (m *SearchResult) GetAuthor() *Package_Author {
 	if m != nil {
@@ -297,25 +314,28 @@ func (m *SearchResult) GetAuthor() *Package_Author {
 type PingRequest struct {
 }
 
-func (m *PingRequest) Reset()         { *m = PingRequest{} }
-func (m *PingRequest) String() string { return proto.CompactTextString(m) }
-func (*PingRequest) ProtoMessage()    {}
+func (m *PingRequest) Reset()                    { *m = PingRequest{} }
+func (m *PingRequest) String() string            { return proto.CompactTextString(m) }
+func (*PingRequest) ProtoMessage()               {}
+func (*PingRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{5} }
 
 type PingResponse struct {
 }
 
-func (m *PingResponse) Reset()         { *m = PingResponse{} }
-func (m *PingResponse) String() string { return proto.CompactTextString(m) }
-func (*PingResponse) ProtoMessage()    {}
+func (m *PingResponse) Reset()                    { *m = PingResponse{} }
+func (m *PingResponse) String() string            { return proto.CompactTextString(m) }
+func (*PingResponse) ProtoMessage()               {}
+func (*PingResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{6} }
 
 type PublishRequest struct {
-	PackageDescription *Package `protobuf:"bytes,1,opt,name=package_description" json:"package_description,omitempty"`
+	PackageDescription *Package `protobuf:"bytes,1,opt,name=package_description,json=packageDescription" json:"package_description,omitempty"`
 	Token              string   `protobuf:"bytes,2,opt,name=token" json:"token,omitempty"`
 }
 
-func (m *PublishRequest) Reset()         { *m = PublishRequest{} }
-func (m *PublishRequest) String() string { return proto.CompactTextString(m) }
-func (*PublishRequest) ProtoMessage()    {}
+func (m *PublishRequest) Reset()                    { *m = PublishRequest{} }
+func (m *PublishRequest) String() string            { return proto.CompactTextString(m) }
+func (*PublishRequest) ProtoMessage()               {}
+func (*PublishRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{7} }
 
 func (m *PublishRequest) GetPackageDescription() *Package {
 	if m != nil {
@@ -327,27 +347,30 @@ func (m *PublishRequest) GetPackageDescription() *Package {
 type PublishResponse struct {
 }
 
-func (m *PublishResponse) Reset()         { *m = PublishResponse{} }
-func (m *PublishResponse) String() string { return proto.CompactTextString(m) }
-func (*PublishResponse) ProtoMessage()    {}
+func (m *PublishResponse) Reset()                    { *m = PublishResponse{} }
+func (m *PublishResponse) String() string            { return proto.CompactTextString(m) }
+func (*PublishResponse) ProtoMessage()               {}
+func (*PublishResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{8} }
 
 type DependencyRequest struct {
-	PackageNames  []string    `protobuf:"bytes,1,rep,name=package_names" json:"package_names,omitempty"`
-	CompatLicense LicenseType `protobuf:"varint,4,opt,name=compat_license,enum=messages.LicenseType" json:"compat_license,omitempty"`
+	PackageNames  []string    `protobuf:"bytes,1,rep,name=package_names,json=packageNames" json:"package_names,omitempty"`
+	CompatLicense LicenseType `protobuf:"varint,4,opt,name=compat_license,json=compatLicense,enum=messages.LicenseType" json:"compat_license,omitempty"`
 }
 
-func (m *DependencyRequest) Reset()         { *m = DependencyRequest{} }
-func (m *DependencyRequest) String() string { return proto.CompactTextString(m) }
-func (*DependencyRequest) ProtoMessage()    {}
+func (m *DependencyRequest) Reset()                    { *m = DependencyRequest{} }
+func (m *DependencyRequest) String() string            { return proto.CompactTextString(m) }
+func (*DependencyRequest) ProtoMessage()               {}
+func (*DependencyRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{9} }
 
 type DependencyResponse struct {
 	Dependencies []*Dependency        `protobuf:"bytes,1,rep,name=dependencies" json:"dependencies,omitempty"`
 	Messages     []*DependencyMessage `protobuf:"bytes,2,rep,name=messages" json:"messages,omitempty"`
 }
 
-func (m *DependencyResponse) Reset()         { *m = DependencyResponse{} }
-func (m *DependencyResponse) String() string { return proto.CompactTextString(m) }
-func (*DependencyResponse) ProtoMessage()    {}
+func (m *DependencyResponse) Reset()                    { *m = DependencyResponse{} }
+func (m *DependencyResponse) String() string            { return proto.CompactTextString(m) }
+func (*DependencyResponse) ProtoMessage()               {}
+func (*DependencyResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{10} }
 
 func (m *DependencyResponse) GetDependencies() []*Dependency {
 	if m != nil {
@@ -364,20 +387,22 @@ func (m *DependencyResponse) GetMessages() []*DependencyMessage {
 }
 
 type SearchRequest struct {
-	PackageName string `protobuf:"bytes,1,opt,name=package_name" json:"package_name,omitempty"`
+	PackageName string `protobuf:"bytes,1,opt,name=package_name,json=packageName" json:"package_name,omitempty"`
 }
 
-func (m *SearchRequest) Reset()         { *m = SearchRequest{} }
-func (m *SearchRequest) String() string { return proto.CompactTextString(m) }
-func (*SearchRequest) ProtoMessage()    {}
+func (m *SearchRequest) Reset()                    { *m = SearchRequest{} }
+func (m *SearchRequest) String() string            { return proto.CompactTextString(m) }
+func (*SearchRequest) ProtoMessage()               {}
+func (*SearchRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{11} }
 
 type SearchResponse struct {
 	Results []*SearchResult `protobuf:"bytes,1,rep,name=results" json:"results,omitempty"`
 }
 
-func (m *SearchResponse) Reset()         { *m = SearchResponse{} }
-func (m *SearchResponse) String() string { return proto.CompactTextString(m) }
-func (*SearchResponse) ProtoMessage()    {}
+func (m *SearchResponse) Reset()                    { *m = SearchResponse{} }
+func (m *SearchResponse) String() string            { return proto.CompactTextString(m) }
+func (*SearchResponse) ProtoMessage()               {}
+func (*SearchResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{12} }
 
 func (m *SearchResponse) GetResults() []*SearchResult {
 	if m != nil {
@@ -389,17 +414,19 @@ func (m *SearchResponse) GetResults() []*SearchResult {
 type ListRequest struct {
 }
 
-func (m *ListRequest) Reset()         { *m = ListRequest{} }
-func (m *ListRequest) String() string { return proto.CompactTextString(m) }
-func (*ListRequest) ProtoMessage()    {}
+func (m *ListRequest) Reset()                    { *m = ListRequest{} }
+func (m *ListRequest) String() string            { return proto.CompactTextString(m) }
+func (*ListRequest) ProtoMessage()               {}
+func (*ListRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{13} }
 
 type ListResponse struct {
 	Results []*SearchResult `protobuf:"bytes,1,rep,name=results" json:"results,omitempty"`
 }
 
-func (m *ListResponse) Reset()         { *m = ListResponse{} }
-func (m *ListResponse) String() string { return proto.CompactTextString(m) }
-func (*ListResponse) ProtoMessage()    {}
+func (m *ListResponse) Reset()                    { *m = ListResponse{} }
+func (m *ListResponse) String() string            { return proto.CompactTextString(m) }
+func (*ListResponse) ProtoMessage()               {}
+func (*ListResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{14} }
 
 func (m *ListResponse) GetResults() []*SearchResult {
 	if m != nil {
@@ -414,25 +441,28 @@ type LoginRequest struct {
 	Create   bool   `protobuf:"varint,3,opt,name=create" json:"create,omitempty"`
 }
 
-func (m *LoginRequest) Reset()         { *m = LoginRequest{} }
-func (m *LoginRequest) String() string { return proto.CompactTextString(m) }
-func (*LoginRequest) ProtoMessage()    {}
+func (m *LoginRequest) Reset()                    { *m = LoginRequest{} }
+func (m *LoginRequest) String() string            { return proto.CompactTextString(m) }
+func (*LoginRequest) ProtoMessage()               {}
+func (*LoginRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{15} }
 
 type LoginResponse struct {
 	Token string `protobuf:"bytes,1,opt,name=token" json:"token,omitempty"`
 }
 
-func (m *LoginResponse) Reset()         { *m = LoginResponse{} }
-func (m *LoginResponse) String() string { return proto.CompactTextString(m) }
-func (*LoginResponse) ProtoMessage()    {}
+func (m *LoginResponse) Reset()                    { *m = LoginResponse{} }
+func (m *LoginResponse) String() string            { return proto.CompactTextString(m) }
+func (*LoginResponse) ProtoMessage()               {}
+func (*LoginResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{16} }
 
 type InfoRequest struct {
-	PackageName string `protobuf:"bytes,1,opt,name=package_name" json:"package_name,omitempty"`
+	PackageName string `protobuf:"bytes,1,opt,name=package_name,json=packageName" json:"package_name,omitempty"`
 }
 
-func (m *InfoRequest) Reset()         { *m = InfoRequest{} }
-func (m *InfoRequest) String() string { return proto.CompactTextString(m) }
-func (*InfoRequest) ProtoMessage()    {}
+func (m *InfoRequest) Reset()                    { *m = InfoRequest{} }
+func (m *InfoRequest) String() string            { return proto.CompactTextString(m) }
+func (*InfoRequest) ProtoMessage()               {}
+func (*InfoRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{17} }
 
 type InfoResponse struct {
 	Package      *Package       `protobuf:"bytes,1,opt,name=package" json:"package,omitempty"`
@@ -440,9 +470,10 @@ type InfoResponse struct {
 	Dependencies []*Dependency  `protobuf:"bytes,3,rep,name=dependencies" json:"dependencies,omitempty"`
 }
 
-func (m *InfoResponse) Reset()         { *m = InfoResponse{} }
-func (m *InfoResponse) String() string { return proto.CompactTextString(m) }
-func (*InfoResponse) ProtoMessage()    {}
+func (m *InfoResponse) Reset()                    { *m = InfoResponse{} }
+func (m *InfoResponse) String() string            { return proto.CompactTextString(m) }
+func (*InfoResponse) ProtoMessage()               {}
+func (*InfoResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{18} }
 
 func (m *InfoResponse) GetPackage() *Package {
 	if m != nil {
@@ -469,9 +500,10 @@ type LicenseRequest struct {
 	Package *Package `protobuf:"bytes,1,opt,name=package" json:"package,omitempty"`
 }
 
-func (m *LicenseRequest) Reset()         { *m = LicenseRequest{} }
-func (m *LicenseRequest) String() string { return proto.CompactTextString(m) }
-func (*LicenseRequest) ProtoMessage()    {}
+func (m *LicenseRequest) Reset()                    { *m = LicenseRequest{} }
+func (m *LicenseRequest) String() string            { return proto.CompactTextString(m) }
+func (*LicenseRequest) ProtoMessage()               {}
+func (*LicenseRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{19} }
 
 func (m *LicenseRequest) GetPackage() *Package {
 	if m != nil {
@@ -484,9 +516,10 @@ type LicenseResponse struct {
 	Body string `protobuf:"bytes,1,opt,name=body" json:"body,omitempty"`
 }
 
-func (m *LicenseResponse) Reset()         { *m = LicenseResponse{} }
-func (m *LicenseResponse) String() string { return proto.CompactTextString(m) }
-func (*LicenseResponse) ProtoMessage()    {}
+func (m *LicenseResponse) Reset()                    { *m = LicenseResponse{} }
+func (m *LicenseResponse) String() string            { return proto.CompactTextString(m) }
+func (*LicenseResponse) ProtoMessage()               {}
+func (*LicenseResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{20} }
 
 func init() {
 	proto.RegisterType((*DependencyMessage)(nil), "messages.DependencyMessage")
@@ -521,6 +554,10 @@ func init() {
 // Reference imports to suppress errors if they are not otherwise used.
 var _ context.Context
 var _ grpc.ClientConn
+
+// This is a compile-time assertion to ensure that this generated file
+// is compatible with the grpc package it is being compiled against.
+const _ = grpc.SupportPackageIsVersion3
 
 // Client API for Qpm service
 
@@ -632,100 +669,148 @@ func RegisterQpmServer(s *grpc.Server, srv QpmServer) {
 	s.RegisterService(&_Qpm_serviceDesc, srv)
 }
 
-func _Qpm_Ping_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error) (interface{}, error) {
+func _Qpm_Ping_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(PingRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
-	out, err := srv.(QpmServer).Ping(ctx, in)
-	if err != nil {
-		return nil, err
+	if interceptor == nil {
+		return srv.(QpmServer).Ping(ctx, in)
 	}
-	return out, nil
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/messages.Qpm/Ping",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QpmServer).Ping(ctx, req.(*PingRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
-func _Qpm_Publish_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error) (interface{}, error) {
+func _Qpm_Publish_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(PublishRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
-	out, err := srv.(QpmServer).Publish(ctx, in)
-	if err != nil {
-		return nil, err
+	if interceptor == nil {
+		return srv.(QpmServer).Publish(ctx, in)
 	}
-	return out, nil
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/messages.Qpm/Publish",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QpmServer).Publish(ctx, req.(*PublishRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
-func _Qpm_GetDependencies_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error) (interface{}, error) {
+func _Qpm_GetDependencies_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(DependencyRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
-	out, err := srv.(QpmServer).GetDependencies(ctx, in)
-	if err != nil {
-		return nil, err
+	if interceptor == nil {
+		return srv.(QpmServer).GetDependencies(ctx, in)
 	}
-	return out, nil
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/messages.Qpm/GetDependencies",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QpmServer).GetDependencies(ctx, req.(*DependencyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
-func _Qpm_Search_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error) (interface{}, error) {
+func _Qpm_Search_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SearchRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
-	out, err := srv.(QpmServer).Search(ctx, in)
-	if err != nil {
-		return nil, err
+	if interceptor == nil {
+		return srv.(QpmServer).Search(ctx, in)
 	}
-	return out, nil
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/messages.Qpm/Search",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QpmServer).Search(ctx, req.(*SearchRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
-func _Qpm_List_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error) (interface{}, error) {
+func _Qpm_List_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
-	out, err := srv.(QpmServer).List(ctx, in)
-	if err != nil {
-		return nil, err
+	if interceptor == nil {
+		return srv.(QpmServer).List(ctx, in)
 	}
-	return out, nil
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/messages.Qpm/List",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QpmServer).List(ctx, req.(*ListRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
-func _Qpm_Login_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error) (interface{}, error) {
+func _Qpm_Login_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(LoginRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
-	out, err := srv.(QpmServer).Login(ctx, in)
-	if err != nil {
-		return nil, err
+	if interceptor == nil {
+		return srv.(QpmServer).Login(ctx, in)
 	}
-	return out, nil
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/messages.Qpm/Login",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QpmServer).Login(ctx, req.(*LoginRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
-func _Qpm_Info_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error) (interface{}, error) {
+func _Qpm_Info_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(InfoRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
-	out, err := srv.(QpmServer).Info(ctx, in)
-	if err != nil {
-		return nil, err
+	if interceptor == nil {
+		return srv.(QpmServer).Info(ctx, in)
 	}
-	return out, nil
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/messages.Qpm/Info",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QpmServer).Info(ctx, req.(*InfoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
-func _Qpm_GetLicense_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error) (interface{}, error) {
+func _Qpm_GetLicense_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(LicenseRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
-	out, err := srv.(QpmServer).GetLicense(ctx, in)
-	if err != nil {
-		return nil, err
+	if interceptor == nil {
+		return srv.(QpmServer).GetLicense(ctx, in)
 	}
-	return out, nil
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/messages.Qpm/GetLicense",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QpmServer).GetLicense(ctx, req.(*LicenseRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 var _Qpm_serviceDesc = grpc.ServiceDesc{
@@ -765,5 +850,87 @@ var _Qpm_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Qpm_GetLicense_Handler,
 		},
 	},
-	Streams: []grpc.StreamDesc{},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: fileDescriptor0,
+}
+
+func init() { proto.RegisterFile("qpm.proto", fileDescriptor0) }
+
+var fileDescriptor0 = []byte{
+	// 1185 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x09, 0x6e, 0x88, 0x02, 0xff, 0x9c, 0x57, 0xdd, 0x6e, 0xe2, 0x46,
+	0x14, 0xc6, 0x60, 0x30, 0x1c, 0x03, 0xf1, 0x4e, 0xb7, 0x59, 0x2f, 0xdd, 0x8b, 0xd4, 0x55, 0xaa,
+	0x34, 0x95, 0xb2, 0x84, 0x5c, 0x64, 0x55, 0xed, 0x4a, 0x4b, 0x08, 0x61, 0x2d, 0x11, 0x42, 0x07,
+	0xd2, 0xf6, 0xa6, 0xb2, 0x1c, 0x98, 0x24, 0xee, 0x82, 0xed, 0xb5, 0x9d, 0xac, 0x72, 0x57, 0xf5,
+	0xa6, 0x0f, 0xd0, 0x97, 0xe8, 0x6b, 0xf4, 0x11, 0xfa, 0x18, 0x7d, 0x8b, 0x6a, 0x3c, 0x33, 0x66,
+	0x08, 0xb4, 0x4a, 0xf6, 0x8e, 0x73, 0xe6, 0xfc, 0xcf, 0x77, 0xbe, 0x31, 0x50, 0xf9, 0x10, 0xce,
+	0xf7, 0xc2, 0x28, 0x48, 0x02, 0x54, 0x9e, 0x93, 0x38, 0x76, 0xaf, 0x48, 0x6c, 0xfd, 0xaa, 0xc0,
+	0x93, 0x63, 0x12, 0x12, 0x7f, 0x4a, 0xfc, 0xc9, 0xdd, 0x29, 0x53, 0xa3, 0x6f, 0x40, 0x4d, 0xee,
+	0x42, 0x62, 0x2a, 0x5b, 0xca, 0x4e, 0xbd, 0xf5, 0xf9, 0x9e, 0x30, 0xdf, 0xe3, 0x06, 0xe3, 0xbb,
+	0x90, 0xe0, 0xd4, 0x04, 0x3d, 0x85, 0x62, 0xe2, 0x25, 0x33, 0x62, 0xe6, 0xb7, 0x94, 0x9d, 0x0a,
+	0x66, 0x02, 0x42, 0xa0, 0x5e, 0x04, 0xd3, 0x3b, 0xb3, 0x90, 0x2a, 0xd3, 0xdf, 0x68, 0x13, 0x4a,
+	0x61, 0x14, 0xcc, 0xc3, 0xc4, 0x54, 0xb7, 0x94, 0x9d, 0x32, 0xe6, 0x92, 0xf5, 0xb7, 0x0a, 0xda,
+	0xd0, 0x9d, 0xbc, 0xa7, 0x89, 0x11, 0xa8, 0xbe, 0x3b, 0x67, 0x89, 0x2b, 0x38, 0xfd, 0x8d, 0xb6,
+	0x40, 0x9f, 0x92, 0x78, 0x12, 0x79, 0x61, 0xe2, 0x05, 0x3e, 0xcf, 0x23, 0xab, 0x50, 0x13, 0x4a,
+	0xee, 0x4d, 0x72, 0x1d, 0x44, 0x69, 0x3e, 0xbd, 0x65, 0x2e, 0x0a, 0xe6, 0x81, 0xf7, 0xda, 0xe9,
+	0x39, 0xe6, 0x76, 0xe8, 0x35, 0x40, 0x44, 0xc2, 0x20, 0xf6, 0x92, 0x20, 0xba, 0x4b, 0xeb, 0xd1,
+	0x5b, 0x2f, 0x56, 0xbd, 0x70, 0x66, 0x83, 0x25, 0x7b, 0x74, 0x00, 0xda, 0x2d, 0x89, 0x62, 0x5a,
+	0x4d, 0x31, 0x75, 0x7d, 0xbe, 0xea, 0xfa, 0x03, 0x33, 0xc0, 0xc2, 0x12, 0x59, 0x50, 0x9d, 0x8a,
+	0x41, 0x7b, 0x24, 0x36, 0x4b, 0x5b, 0x85, 0x9d, 0x0a, 0x5e, 0xd2, 0xa1, 0x97, 0xa0, 0xcd, 0xbc,
+	0x09, 0xf1, 0x63, 0x62, 0x6a, 0xf7, 0x47, 0xdf, 0x67, 0x07, 0xe9, 0xe8, 0x85, 0x15, 0xfa, 0x12,
+	0xaa, 0x61, 0xe4, 0x39, 0x97, 0xde, 0x8c, 0xa4, 0x73, 0x2b, 0xb3, 0xe1, 0x84, 0x91, 0x77, 0xc2,
+	0x55, 0xc8, 0x04, 0xed, 0x23, 0xb9, 0x08, 0xdd, 0x2b, 0x62, 0x42, 0x7a, 0x2a, 0xc4, 0xc6, 0x09,
+	0xc0, 0xa2, 0x41, 0xf4, 0xf5, 0xd2, 0x9d, 0xa3, 0x45, 0x62, 0x6a, 0x23, 0x5d, 0xb8, 0x01, 0x85,
+	0x9b, 0x68, 0xc6, 0xaf, 0x81, 0xfe, 0x6c, 0xfc, 0x0c, 0x1a, 0xef, 0x96, 0xa2, 0x61, 0xe6, 0x5e,
+	0x90, 0x19, 0xbf, 0x40, 0x26, 0xa0, 0x06, 0x94, 0x23, 0x72, 0xeb, 0xc5, 0x8b, 0xeb, 0xcb, 0x64,
+	0x7a, 0xbb, 0x97, 0x9e, 0x7f, 0x45, 0xa2, 0x30, 0xf2, 0xfc, 0x84, 0x03, 0x46, 0x56, 0x35, 0x5a,
+	0x50, 0x62, 0xb7, 0xb7, 0x16, 0x1d, 0x4f, 0xa1, 0x48, 0xe6, 0xae, 0x27, 0x0a, 0x62, 0x82, 0xf5,
+	0x87, 0x02, 0xb0, 0x80, 0xf5, 0x5a, 0xc7, 0x65, 0x08, 0xe4, 0x3f, 0x1d, 0x02, 0x85, 0x87, 0x42,
+	0xc0, 0xf2, 0x40, 0xe7, 0x3a, 0xdb, 0xbf, 0x0c, 0xe4, 0x18, 0xca, 0x83, 0x61, 0xb4, 0x0d, 0xf5,
+	0xa9, 0x9b, 0x10, 0x27, 0xbc, 0xb9, 0x98, 0x79, 0xf1, 0x35, 0x99, 0xf2, 0xc6, 0x6b, 0x54, 0x3b,
+	0x14, 0x4a, 0xeb, 0x2f, 0x05, 0xaa, 0x23, 0xe2, 0x46, 0x93, 0x6b, 0x4c, 0xe2, 0x9b, 0x59, 0xb2,
+	0x76, 0x04, 0xe6, 0xa2, 0x00, 0x16, 0x24, 0xcb, 0xf2, 0xf8, 0x8d, 0xba, 0xb7, 0xa5, 0xea, 0xea,
+	0x96, 0x4a, 0xe0, 0x2e, 0x3e, 0x04, 0xdc, 0x56, 0x0d, 0xf4, 0xa1, 0xe7, 0x5f, 0x61, 0xf2, 0xe1,
+	0x86, 0xc4, 0x89, 0x55, 0x87, 0x2a, 0x13, 0xe3, 0x30, 0xa0, 0xc7, 0xbf, 0x40, 0x9d, 0xf7, 0xcb,
+	0x2d, 0xd0, 0x11, 0x7c, 0x16, 0xb2, 0xea, 0x1c, 0xb9, 0x16, 0x36, 0xdc, 0x27, 0x2b, 0x2d, 0x60,
+	0xc4, 0xad, 0x8f, 0xa5, 0x2a, 0x29, 0x9f, 0x05, 0xef, 0x89, 0x9f, 0xf1, 0x19, 0x15, 0xac, 0x27,
+	0xb0, 0x91, 0xe5, 0xe2, 0xe9, 0x6f, 0x65, 0xe2, 0x14, 0x15, 0x7c, 0x05, 0x35, 0x51, 0x01, 0x9d,
+	0x70, 0x6c, 0x2a, 0x6c, 0xcb, 0xb9, 0x72, 0x40, 0x75, 0xe8, 0x35, 0xd4, 0x27, 0xc1, 0x3c, 0x74,
+	0x13, 0x47, 0xcc, 0x43, 0xfd, 0xbf, 0x79, 0xd4, 0x98, 0x31, 0x57, 0x59, 0xbf, 0x2b, 0x80, 0xe4,
+	0xc4, 0xac, 0x1c, 0xf4, 0xea, 0x1e, 0xbd, 0xd0, 0xc4, 0x7a, 0xeb, 0xe9, 0x22, 0xa4, 0xe4, 0xb3,
+	0x4c, 0x3a, 0x87, 0x90, 0x3d, 0x07, 0x66, 0x3e, 0xf5, 0xfa, 0x62, 0x9d, 0x17, 0xa7, 0x7e, 0xbc,
+	0x78, 0x3b, 0x5a, 0x50, 0x13, 0x10, 0x63, 0xdd, 0x53, 0x36, 0x92, 0xba, 0xe7, 0x58, 0xd3, 0xa5,
+	0xe6, 0xad, 0x23, 0xa8, 0x67, 0xb0, 0x64, 0x85, 0x37, 0x41, 0x8b, 0x52, 0x88, 0x8a, 0x9a, 0x37,
+	0x17, 0xd9, 0x65, 0x04, 0x63, 0x61, 0x46, 0x71, 0xd1, 0xf7, 0xe2, 0x44, 0xe0, 0xe2, 0x2d, 0x54,
+	0x99, 0xf8, 0xc9, 0x01, 0x7f, 0x82, 0x6a, 0x3f, 0xb8, 0xf2, 0x7c, 0xd1, 0x47, 0xc6, 0x29, 0x8a,
+	0xc4, 0x29, 0x94, 0xc5, 0x42, 0x37, 0x8e, 0x3f, 0x06, 0x91, 0xd8, 0xb9, 0x4c, 0xa6, 0x6f, 0xdb,
+	0x24, 0x22, 0x6e, 0x42, 0xd2, 0x7d, 0x29, 0x63, 0x2e, 0x59, 0xdb, 0x50, 0xe3, 0x91, 0x79, 0x71,
+	0x19, 0xbc, 0x14, 0x19, 0x5e, 0x4d, 0xd0, 0x29, 0x23, 0x3c, 0x62, 0x8e, 0x7f, 0x2a, 0x50, 0x65,
+	0x2e, 0x3c, 0xf0, 0xb7, 0xa0, 0xf1, 0xf3, 0xff, 0xc6, 0xbb, 0xb0, 0x40, 0xfb, 0x50, 0xe6, 0x9b,
+	0x2e, 0xae, 0x5c, 0xc2, 0x9e, 0x44, 0x51, 0x38, 0x33, 0x5b, 0xc1, 0x57, 0xe1, 0xa1, 0xf8, 0xb2,
+	0xde, 0x40, 0x9d, 0x63, 0x57, 0xf4, 0xf7, 0x98, 0x5a, 0xad, 0x6d, 0xd8, 0xc8, 0xdc, 0x79, 0xaf,
+	0xe2, 0xeb, 0x42, 0x59, 0x7c, 0x5d, 0xec, 0xbe, 0x82, 0xb2, 0x78, 0xa8, 0x50, 0x19, 0xd4, 0xf6,
+	0xf9, 0xf8, 0xcc, 0xc8, 0x21, 0x80, 0x52, 0xcf, 0x1e, 0xbf, 0x3b, 0x3f, 0x32, 0x14, 0xa4, 0x41,
+	0xa1, 0x67, 0x8f, 0x8d, 0x3c, 0xaa, 0x41, 0xe5, 0xb4, 0x8b, 0x3b, 0xe7, 0xd8, 0x6e, 0xf7, 0x8d,
+	0xc2, 0xee, 0x3f, 0x0a, 0xc5, 0x53, 0xb6, 0x6f, 0xd4, 0x7b, 0x70, 0x36, 0xe8, 0x1a, 0x39, 0xea,
+	0x71, 0x6a, 0x8f, 0x0d, 0x05, 0x55, 0xa1, 0xdc, 0xee, 0x0d, 0xfb, 0xce, 0x81, 0xd3, 0x34, 0xf2,
+	0xa8, 0x0e, 0xd0, 0x1e, 0xb6, 0x3b, 0xef, 0xba, 0x4e, 0xcb, 0x69, 0x1a, 0x05, 0x64, 0x40, 0xb5,
+	0x8d, 0xc7, 0xf6, 0x68, 0x6c, 0x77, 0x52, 0x8d, 0x4a, 0x35, 0x47, 0xa3, 0x63, 0xa7, 0xe5, 0x74,
+	0xfa, 0xed, 0xf3, 0x51, 0xd7, 0x28, 0x0a, 0xcd, 0x81, 0xd0, 0x94, 0x90, 0x0e, 0x5a, 0xa7, 0xd3,
+	0x74, 0xf6, 0x9d, 0xa6, 0xa1, 0x51, 0xa1, 0x3b, 0xec, 0xa7, 0x42, 0x99, 0x0a, 0x34, 0x19, 0x0d,
+	0x55, 0x11, 0x02, 0xcd, 0x0c, 0xb4, 0x20, 0x7b, 0xd4, 0x31, 0x74, 0x5a, 0x50, 0x9f, 0xd9, 0xec,
+	0x1b, 0xd5, 0x4c, 0xa2, 0x46, 0x35, 0xda, 0xde, 0xf9, 0xa0, 0x6f, 0x77, 0xba, 0x83, 0x51, 0xd7,
+	0xa8, 0xd3, 0x00, 0xa7, 0x3c, 0xda, 0xc6, 0xee, 0x4b, 0xd0, 0xa5, 0x4f, 0x38, 0xda, 0xaa, 0x3d,
+	0x38, 0xa1, 0x83, 0xd2, 0x41, 0xfb, 0xb1, 0x8d, 0x07, 0xf6, 0xa0, 0x67, 0x28, 0xa8, 0x02, 0xc5,
+	0x2e, 0xc6, 0x67, 0xd8, 0xc8, 0xb7, 0x7e, 0x53, 0xa1, 0xf0, 0x7d, 0x38, 0x47, 0x87, 0xa0, 0x52,
+	0xf2, 0x45, 0x12, 0x4e, 0x24, 0x6e, 0x6e, 0x6c, 0xde, 0x57, 0x73, 0x92, 0xcc, 0xa1, 0xb7, 0xa0,
+	0x71, 0xe6, 0x44, 0xf2, 0x23, 0xb2, 0x44, 0xdc, 0x8d, 0xe7, 0x6b, 0x4e, 0xb2, 0x08, 0x03, 0xd8,
+	0xe8, 0x91, 0xe4, 0x58, 0xa6, 0xac, 0xb5, 0x04, 0x25, 0x82, 0xbd, 0x58, 0x7f, 0x98, 0xc5, 0x7b,
+	0x03, 0x25, 0x46, 0x03, 0xe8, 0xd9, 0x2a, 0x31, 0xb0, 0x10, 0xe6, 0x1a, 0xc6, 0x10, 0xee, 0x87,
+	0xa0, 0x52, 0xba, 0x41, 0x4b, 0x6c, 0x9d, 0xb1, 0x91, 0x3c, 0x09, 0x99, 0x95, 0xac, 0x1c, 0xfa,
+	0x0e, 0x8a, 0x29, 0x17, 0x20, 0xd9, 0x44, 0xa2, 0x9d, 0xc6, 0xb3, 0x15, 0xbd, 0x9c, 0x34, 0xfd,
+	0x64, 0x90, 0x92, 0x4a, 0x84, 0x21, 0x27, 0x95, 0x49, 0xc1, 0xca, 0xa1, 0x0e, 0x40, 0x8f, 0x88,
+	0xb7, 0x43, 0xbe, 0x81, 0xe5, 0x95, 0x94, 0x6f, 0xe0, 0xde, 0xb6, 0x59, 0xb9, 0x8b, 0x52, 0xfa,
+	0xaf, 0xe1, 0xe0, 0xdf, 0x00, 0x00, 0x00, 0xff, 0xff, 0x7e, 0xcd, 0x4d, 0x61, 0x42, 0x0c, 0x00,
+	0x00,
 }
