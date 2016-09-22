@@ -1,27 +1,28 @@
 
-VERSION := 0.10.0
-GOPATH  := ${PWD}
+BINARY := qpm
+VERSION := 0.11.0
+BUILD := $(git rev-parse head)
 TS      := $(shell /bin/date "+%Y-%m-%d---%H-%M-%S")
-export GOPATH
-
 SOURCES := $(shell find . -name '*.go')
+LDFLAGS := -ldflags "-X main.Version=${VERSION} -X main.Build=${BUILD}"
 
 BINARIES := \
-  bin/windows_386/qpm.exe \
-  bin/windows_amd64/qpm.exe \
-  bin/linux_386/qpm \
-  bin/linux_amd64/qpm \
-  bin/darwin_386/qpm \
-  bin/darwin_amd64/qpm
+  ${GOPATH}/bin/windows_386/qpm.exe \
+  ${GOPATH}/bin/windows_amd64/qpm.exe \
+  ${GOPATH}/bin/linux_386/qpm \
+  ${GOPATH}/bin/linux_amd64/qpm \
+  ${GOPATH}/bin/darwin_386/qpm \
+  ${GOPATH}/bin/darwin_amd64/qpm
 
 default: $(SOURCES)
-	go install qpm.io/qpm
+	go install ${LDFLAGS} qpm.io/qpm
 
-.protobuf: src/qpm.io/common/messages/qpm.proto bin/protoc-gen-go
-	cd src/qpm.io/common/messages; \
+.protobuf: common/messages/qpm.proto ${GOPATH}/bin/protoc-gen-go
+	cd common/messages; \
 	protoc --plugin=$$GOPATH/bin/protoc-gen-go --go_out=plugins=grpc:. *.proto
 
-bin/protoc-gen-go:
+${GOPATH}/bin/protoc-gen-go:
+	go get -u github.com/golang/protobuf/protoc-gen-go
 	go install github.com/golang/protobuf/protoc-gen-go
 
 .all: $(BINARIES)

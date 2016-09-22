@@ -2,20 +2,25 @@ language: go
 
 sudo: false
 
+go_import_path: qpm.io
+
 cache:
   directories:
   - $HOME/protobuf
 
 before_install:
-  - wget https://github.com/google/protobuf/archive/v3.0.0-beta-1.tar.gz
-  - tar -xzvf v3.0.0-beta-1.tar.gz
-  - if [ ! -d "$HOME/protobuf/lib" ]; then pushd protobuf-3.0.0-beta-1 && ./autogen.sh && ./configure --prefix=$HOME/protobuf && make && make install && popd; else echo 'Using cached directory.'; fi
+  - wget https://github.com/google/protobuf/archive/v3.0.2.tar.gz
+  - tar -xzvf v3.0.2.tar.gz
+  - if [ ! -d "$HOME/protobuf/lib" ]; then pushd protobuf-3.0.2 && ./autogen.sh && ./configure --prefix=$HOME/protobuf && make && make install && popd; else echo 'Using cached directory.'; fi
+
+install:
+  - go get -u github.com/golang/protobuf/protoc-gen-go
 
 before_script:
   - export PATH=$HOME/protobuf/bin:$PATH
 
 go:
-  - 1.6
+  - 1.7
 
 env:
     - GIMME_OS=linux GIMME_ARCH=amd64
