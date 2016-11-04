@@ -33,12 +33,22 @@ type Context struct {
 func NewContext() *Context {
 	log := log.New(os.Stderr, "QPM: ", log.LstdFlags)
 
-	creds := credentials.NewClientTLSFromCert(nil, "")
 	address := os.Getenv("SERVER")
 	if address == "" {
 		address = Address
 	}
-	conn, err := grpc.Dial(address, grpc.WithTransportCredentials(creds), grpc.WithUserAgent(UA))
+
+	noTls := os.Getenv("NO_TLS") == "1"
+
+	var tlsOption grpc.DialOption
+	if noTls {
+		tlsOption = grpc.WithInsecure()
+	} else {
+		tlsOption = grpc.WithTransportCredentials(credentials.NewClientTLSFromCert(nil, ""))
+	}
+
+	conn, err := grpc.Dial(address, tlsOption, grpc.WithUserAgent(UA))
+
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
