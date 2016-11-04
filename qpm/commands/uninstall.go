@@ -6,8 +6,11 @@ package commands
 import (
 	"flag"
 	"fmt"
+	"io"
 	"os"
+	"path"
 	"path/filepath"
+
 	"qpm.io/common"
 	"qpm.io/qpm/core"
 )
@@ -38,6 +41,20 @@ func (u *UninstallCommand) RegisterFlags(flags *flag.FlagSet) {
 	if err != nil {
 		u.vendorDir = core.Vendor
 	}
+}
+
+func (u UninstallCommand) isEmpty(name string) (error, bool) {
+	f, err := os.Open(name)
+	if err != nil {
+		return err, false
+	}
+	defer f.Close()
+
+	_, err = f.Readdirnames(1)
+	if err == io.EOF {
+		return nil, true
+	}
+	return err, false
 }
 
 func (u *UninstallCommand) Run() error {
@@ -81,12 +98,20 @@ func (u *UninstallCommand) Run() error {
 	// Final step is to delete the dependency's directory. This should
 	// be done last since after this step, the info about the package is
 	// gone.
+
 	if err := os.RemoveAll(toRemove.RootDir()); err != nil {
 		u.Error(err)
 		return err
 	}
 
-	// TODO: Cleanup empty leaf directories in parent dirs
+	// Cleanup empty leaf directories in parent dirs
+	dir := path.Clean(toRemove.RootDir() + "/..")
+	for dir != u.vendorDir {
+		if _, empty := u.isEmpty(dir); empty {
+			os.Remove(dir);
+		}
+		dir = path.Clean(dir + "/..")
+	}
 
 	// Regenerate vendor.pri
 	if err := GenerateVendorPri(u.vendorDir, pkg); err != nil {
