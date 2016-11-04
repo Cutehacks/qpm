@@ -5,12 +5,46 @@ package commands
 
 import (
 	"flag"
-	"fmt"
+	"os"
+	"text/template"
 
 	"golang.org/x/net/context"
 	msg "qpm.io/common/messages"
 	"qpm.io/qpm/core"
 )
+
+const infoBody = `
+Name: {{.Package.Name}}
+Author: {{.Package.Author.Name}} ({{.Package.Author.Email}})
+Webpage: {{.Package.Webpage}}
+License: {{.Package.License.String}}
+Repository: {{.Package.Repository.Url}}
+Description: {{.Package.Description}}
+Dependencies:
+{{- with .Dependencies}}
+	{{range $index, $dependency := . }}
+	{{$dependency.Name}}@{{$dependency.Version}}
+	{{end }}
+{{else}}
+	None.
+{{end -}}
+Versions:
+{{- with .Versions}}
+	{{range $index, $version := .}}
+	{{- $date := $version.DatePublished | toDate -}}
+	{{$version.Version.Label}} [{{$date.Format "02/01/06 15:04"}}]
+	{{end -}}
+{{else}}
+	No versions have been published.
+{{end -}}
+
+`
+
+var funcs = template.FuncMap{
+	"toDate": core.ToDateTime,
+}
+
+var infoTemplate = template.Must(template.New("info").Funcs(funcs).Parse(infoBody))
 
 type InfoCommand struct {
 	BaseCommand
@@ -43,12 +77,9 @@ func (p *InfoCommand) Run() error {
 		p.Fatal(err.Error())
 	}
 
-	fmt.Printf("\nName: %s", response.Package.Name)
-	fmt.Printf("\nAuthor: %s (%s)", response.Package.Author.Name, response.Package.Author.Email)
-	fmt.Printf("\nWebpage: %s", response.Package.Webpage)
-	fmt.Printf("\nLicense: %s", response.Package.License.String())
-	fmt.Printf("\nRepository: %s", response.Package.Repository.Url)
-	fmt.Printf("\nDescription: %s\n\n", response.Package.Description)
+	if err := infoTemplate.Execute(os.Stdout, response); err != nil {
+		p.Fatal(err.Error())
+	}
 
 	return nil
 }

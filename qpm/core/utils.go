@@ -11,6 +11,7 @@ import (
 	"strings"
 	"syscall"
 	"text/template"
+	"time"
 )
 
 const (
@@ -33,6 +34,11 @@ func IntMin(a, b int) int {
 		return a
 	}
 	return b
+}
+
+func ToDateTime(in string) time.Time {
+	t, _ := time.Parse(time.RFC3339, in)
+	return t
 }
 
 // Pretty prints a table of package SearchResults.
