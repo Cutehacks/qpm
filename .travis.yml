@@ -19,6 +19,9 @@ install:
 before_script:
   - export PATH=$HOME/protobuf/bin:$PATH
 
+script:
+  - go install qpm.io/qpm
+
 go:
   - 1.7
 
