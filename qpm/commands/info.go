@@ -24,10 +24,10 @@ Dependencies:
 {{- with .Dependencies}}
 	{{range $index, $dependency := . }}
 	{{$dependency.Name}}@{{$dependency.Version}}
-	{{end }}
+	{{end}}
 {{else}}
 	None.
-{{end -}}
+{{end}}
 Versions:
 {{- with .Versions}}
 	{{range $index, $version := .}}
@@ -36,8 +36,17 @@ Versions:
 	{{end -}}
 {{else}}
 	No versions have been published.
+{{end}}
+Installation Statistics:
+{{- with .InstallStats}}
+	Today: {{.Daily}}
+	This week: {{.Weekly}}
+	This month: {{.Monthly}}
+	This year: {{.Yearly}}
+	Total: {{.Total}}
+{{else}}
+	Not available.
 {{end -}}
-
 `
 
 var funcs = template.FuncMap{
