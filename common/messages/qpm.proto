@@ -90,6 +90,14 @@ message SearchResult {
 	LicenseType license = 5;
 }
 
+message InstallStats {
+	uint32 daily = 1;
+	uint32 weekly = 2;
+	uint32 monthly = 3;
+	uint32 yearly = 4;
+	uint32 total = 5;
+}
+
 message PingRequest {
 
 }
@@ -146,11 +154,11 @@ message InfoRequest {
 	string package_name = 1;
 }
 
-
 message InfoResponse {
 	Package package = 1;
 	repeated VersionInfo versions = 2;
 	repeated Dependency dependencies = 3;
+	InstallStats install_stats = 4;
 }
 
 message LicenseRequest {
