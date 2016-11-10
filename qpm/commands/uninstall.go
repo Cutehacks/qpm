@@ -108,7 +108,7 @@ func (u *UninstallCommand) Run() error {
 	dir := path.Clean(toRemove.RootDir() + "/..")
 	for dir != u.vendorDir {
 		if _, empty := u.isEmpty(dir); empty {
-			os.Remove(dir);
+			os.Remove(dir)
 		}
 		dir = path.Clean(dir + "/..")
 	}

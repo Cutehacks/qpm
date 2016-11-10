@@ -198,7 +198,7 @@ func main() {
 
 	license, err := ctx.Client.GetLicense(context.Background(), req)
 	if err != nil {
-		log.Fatalf("Could not fetch license info:", err.Error())
+		log.Fatalf("Could not fetch license info: %s", err.Error())
 	}
 
 	licenseTxt := license.Body + licenseAddendum
