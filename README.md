@@ -44,7 +44,7 @@ qpm is **not**:
 
 * A binary package manager (like apt-get, yum, or brew).
 * A build system (like qmake or qbs).
-* A version control system (like Git or SVN.
+* A version control system (like Git or SVN).
 
 ## How it works
 
