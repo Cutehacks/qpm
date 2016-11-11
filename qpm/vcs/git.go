@@ -66,7 +66,7 @@ func (g *Git) Test() error {
 
 func (g *Git) cloneRepository(url string, destdir string) error {
 	//log.Print("git clone ", url, " ", destdir)
-	_, err := exec.Command("git", "clone", url, destdir).Output()
+	_, err := exec.Command("git", "clone", "--recursive", url, destdir).Output()
 	if err != nil {
 		return err
 	}
