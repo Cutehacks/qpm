@@ -1,9 +1,9 @@
 
 [![Build Status](https://travis-ci.org/Cutehacks/qpm.svg?branch=master)](https://travis-ci.org/Cutehacks/qpm)
 
-[![Join the chat at https://gitter.im/Cutehacks/qpm](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Cutehacks/qpm?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Join us on the #qpm channel](http://org-qtmob-slackin.herokuapp.com/badge.svg)](http://slackin.qtmob.org)
 
-[Roadmap](https://trello.com/b/ofOIyRR0/qpm-roadmap)
+[Roadmap](https://github.com/Cutehacks/qpm/projects/1)
 
 # Introduction
 
