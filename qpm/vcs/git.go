@@ -66,6 +66,10 @@ func (g *Git) Test() error {
 
 func (g *Git) cloneRepository(url string, destdir string) error {
 	//log.Print("git clone ", url, " ", destdir)
+
+	// Only clone over HTTPS for now.
+	url = strings.Replace(url, "git@github.com:", "https://github.com/", 1)
+
 	_, err := exec.Command("git", "clone", "--recursive", url, destdir).Output()
 	if err != nil {
 		return err
