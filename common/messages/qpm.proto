@@ -170,6 +170,24 @@ message LicenseResponse {
 	string body = 1;
 }
 
+message DeleteRequest {
+	string package_name = 1;
+	string token = 2;
+}
+
+message DeleteResponse {
+
+}
+
+message DeprecateRequest {
+	string package_name = 1;
+	string token = 2;
+}
+
+message DeprecateResponse {
+
+}
+
 service Qpm {
 
 	rpc Ping(PingRequest) returns (PingResponse) {}
@@ -177,6 +195,8 @@ service Qpm {
 	rpc Publish(PublishRequest) returns (PublishResponse) {}
 
 	rpc GetDependencies(DependencyRequest) returns (DependencyResponse) {}
+
+	rpc GetDependents(DependencyRequest) returns (DependencyResponse) {}
 
 	rpc Search(SearchRequest) returns (SearchResponse) {}
 
@@ -187,4 +207,8 @@ service Qpm {
 	rpc Info(InfoRequest) returns (InfoResponse) {}
 
 	rpc GetLicense(LicenseRequest) returns (LicenseResponse) {}
+
+	rpc Delete(DeleteRequest) returns (DeleteResponse) {}
+
+	rpc Deprecate(DeprecateRequest) returns (DeprecateResponse) {}
 }

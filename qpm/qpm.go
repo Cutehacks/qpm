@@ -7,6 +7,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+
 	cmd "qpm.io/qpm/commands"
 	"qpm.io/qpm/core"
 )
@@ -43,8 +44,8 @@ func main() {
 	registry.RegisterSubCommand("check", cmd.NewCheckCommand(ctx))
 	registry.RegisterSubCommand("sign", cmd.NewSignCommand(ctx))
 	registry.RegisterSubCommand("verify", cmd.NewVerifyCommand(ctx))
-	//registry.RegisterSubCommand("deprecate", cmd.NewDeprecateCommand(ctx))
-	//registry.RegisterSubCommand("prune", cmd.NewPruneCommand(ctx))
+	registry.RegisterSubCommand("deprecate", cmd.NewDeprecateCommand(ctx))
+	registry.RegisterSubCommand("delete", cmd.NewDeleteCommand(ctx))
 
 	if len(os.Args) < 2 {
 		Usage()
