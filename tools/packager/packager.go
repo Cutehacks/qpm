@@ -45,6 +45,8 @@ var (
 		"linux_amd64":   "qpm",
 		"darwin_386":    "qpm",
 		"darwin_amd64":  "qpm",
+		"freebsd_386":   "qpm",
+		"freebsd_amd64": "qpm",
 	}
 
 	rootPackageXml = template.Must(template.New("rootPackageXml").Parse(

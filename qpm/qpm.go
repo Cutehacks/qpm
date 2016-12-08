@@ -23,7 +23,7 @@ Usage:
 
 	registry.CommandUsage()
 
-	fmt.Println("qpm@" + core.Version + "\n")
+	fmt.Printf("qpm@%s (built from %s)\n\n", core.Version, core.Build)
 }
 
 func main() {
