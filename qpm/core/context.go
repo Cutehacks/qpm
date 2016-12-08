@@ -11,8 +11,8 @@ import (
 )
 
 var (
-	Version = "0.10.0"
-	Build   = ""
+	Version = "0.X.x"
+	Build   = "master"
 )
 
 const (
