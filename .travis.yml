@@ -20,20 +20,10 @@ before_script:
   - export PATH=$HOME/protobuf/bin:$PATH
 
 script:
-  - go install qpm.io/qpm
+  - make .all
 
 go:
   - 1.7
-
-env:
-    - GIMME_OS=linux GIMME_ARCH=amd64
-    - GIMME_OS=linux GIMME_ARCH=386
-    - GIMME_OS=darwin GIMME_ARCH=amd64
-    - GIMME_OS=darwin GIMME_ARCH=386
-    - GIMME_OS=windows GIMME_ARCH=amd64
-    - GIMME_OS=windows GIMME_ARCH=386
-    - GIMME_OS=freebsd GIMME_ARCH=amd64
-    - GIMME_OS=freebsd GIMME_ARCH=386
 
 deploy:
   skip_cleanup: true
