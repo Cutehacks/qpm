@@ -86,7 +86,7 @@ The goal is to make qpm available in the following desktop package managers:
 | Chocolately      | Not started   |  |
 | RPM              | Not started   |  |
 | Debian           | Not started   |  |
-| Pacman           | Not started   |  |
+| Pacman           | [AUR](https://aur.archlinux.org/packages/?O=0&SeB=nd&K=qpm&outdated=&SB=n&SO=a&PP=50&do_Search=Go)   |`yaourt -S qpm`  |
 
 ## Use Qt's Maintenance Tool
 
