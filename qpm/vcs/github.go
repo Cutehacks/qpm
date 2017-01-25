@@ -33,7 +33,7 @@ func NewGitHub() *GitHub {
 
 func (g *GitHub) Install(repository *msg.Package_Repository, version *msg.Package_Version, destination string) (*common.PackageWrapper, error) {
 
-	destinationTokens := strings.Split(destination, "/")
+	destinationTokens := strings.Split(destination, string(filepath.Separator))
 	destinationSuffix := destinationTokens[len(destinationTokens)-1]
 	fileDestination := strings.TrimSuffix(destination, destinationSuffix)
 
