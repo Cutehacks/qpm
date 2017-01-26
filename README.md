@@ -26,6 +26,8 @@ publish source code (QML, JS, C++) components that can be compiled into Qt appli
   * [Example Package](#example-package)
   * [Package Naming](#package-naming)
   * [A note on versioning](#a-note-on-versioning)
+  * [Tips](#tips)
+    * [Self-registering packages](#self-registering-packages)
 * [Contributing](#contributing)
   * [Code Style](#code-style)
   * [Prerequisites](#prerequisites)
@@ -112,8 +114,19 @@ it from working.
 
 ## Compile from source
 
+The easiest way to build from source is to use the tools that ship with Go. If you
+already have Go installed and a workspace setup (GOPATH environment variable), then
+installing qpm is as simple as:
+
+```bash
+go get qpm.io/qpm
+```
+
+If you don't want to use `go get` and would prefer to do it the hard way, then you can do the following:
+
 * Ensure you have [Go](http://golang.org/) installed (tested with 1.4.2 and 1.5)
-* Clone this repository
+* Ensure you have a workspace setup (ie: define `GOPATH`)
+* Clone this repository into `$GOPATH/src/qpm.io`
 
 The qpm tool has its dependencies stored in the repo as Git submodules, so to initialize
 those you need to navigate to the root of the project and run:
@@ -121,13 +134,6 @@ those you need to navigate to the root of the project and run:
 ```
 git submodule init
 git submodule update
-```
-
-Go will search GOPATH for dependencies so set that accordingly. From the root of the repository:
-
-```
-export GOPATH=`pwd`
-export PATH=$GOPATH/bin:$PATH
 ```
 
 Compiling the command line tool is as simple as:
@@ -299,6 +305,53 @@ qpm.json file and running `qpm publish`. The meta data for a package is not vers
 changing the description or author will affect all versions of a package. Nested dependencies for a
 package **are** versioned so publishing a new version with new dependencies will not affect previous
 versions.
+
+## Tips
+
+### Self-registering packages
+
+Package authors should aim to make their packages self-registering. This means that application developers
+should require very little boilerplate code to start using your package. Typical boilerplate code is
+registering various types with Qt's various classes.
+
+If you have QML items that are written in C++, your package can automatically register these types by using the
+[Q_COREAPP_STARTUP_FUNCTION](http://doc.qt.io/qt-5/qcoreapplication.html#Q_COREAPP_STARTUP_FUNCTION) macro. For
+example, in one of your `cpp` files, you can do the following:
+
+```cpp
+
+static void registerTypes() {
+    qmlRegisterType<MyType>("io.qpm.MyPackage", 1, 0, "MyItem");
+}
+
+Q_COREAPP_STARTUP_FUNCTION(registerTypes)
+```
+
+The above function will automatically be called after Q[Core|Gui]Application is constructed so the application developer
+needs to do nothing else in order to start using your item :ok_hand:.
+
+If you have items or types that are written in QML or Javascript, they get registered with the QML type system through
+a `qmldir` file. The pattern promoted by qpm involves putting your `qmldir` file inside a resource file to make it
+more self-contained, but this then creates the problem of how does the QML import engine find it? This is the reason
+that we added the `QML_INIT` macro which basically expands to this:
+
+`engine.addImportPath(QStringLiteral("qrc:/"));`
+
+This is somewhat suboptimal though and is the kind of boilerplate we would like to avoid when using qpm. In Qt 5.7
+there was a [change](https://github.com/qt/qtdeclarative/commit/ec5a886d4b92a18669d5bbd01b43a57f7d81b856) that updated
+the default import path with a path in the resource system. The path used was `qrc:/qt-project.org/imports`. This
+implies that it should now be possible for packages to write self-registering QML as well by adding the additional
+prefix to their `qrc` file. For example:
+
+```xml
+<RCC>
+    <qresource prefix="/qt-project.org/imports/io/qpm/mypackage">
+        <file>qmldir</file>
+        <file>MyItem.qml</file>
+        <file>...</file>
+    </qresource>
+</RCC>
+```
 
 # Contributing
 
