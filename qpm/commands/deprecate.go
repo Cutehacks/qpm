@@ -16,7 +16,10 @@ import (
 )
 
 const dependentsBody = `
-Dependencies:
+
+WARNING: This operation may affect other packages that depend on this.
+
+Dependents:
 {{- with .Dependencies}}
 	{{range $index, $dependency := . }}
 	{{$dependency.Name}}@{{$dependency.Version}}
@@ -42,7 +45,7 @@ func NewDeprecateCommand(ctx core.Context) *DeprecateCommand {
 }
 
 func (d DeprecateCommand) Description() string {
-	return "Deprecates the specified package"
+	return "Deprecates the specified package or version"
 }
 
 func (d *DeprecateCommand) RegisterFlags(flags *flag.FlagSet) {
@@ -59,6 +62,10 @@ func (d *DeprecateCommand) Dependents(packageName string) error {
 	})
 	if err != nil {
 		return err
+	}
+
+	if len(dependents.Dependencies) == 0 {
+		return nil
 	}
 
 	if err := dependentsTemplate.Execute(os.Stdout, dependents); err != nil {
@@ -83,7 +90,8 @@ func (d *DeprecateCommand) Run() error {
 		d.Fatal(err.Error())
 	}
 
-	sure := <-Prompt("Are you REALLY sure?:", "Y/n")
+	fmt.Println("\nDeprecating a package or version will remove it from search/list results.")
+	sure := <-Prompt("Are you sure you want to continue?", "Y/n")
 	if len(sure) == 0 || strings.ToLower(string(sure[0])) == "y" {
 		_, err := d.Ctx.Client.Deprecate(context.Background(), &msg.DeprecateRequest{
 			PackageName: packageName,
