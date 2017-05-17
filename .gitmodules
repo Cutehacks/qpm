@@ -13,3 +13,7 @@
 [submodule "crypto"]
 	path = vendor/golang.org/x/crypto
 	url = https://go.googlesource.com/crypto
+[submodule "go-http-dialer"]
+	path = vendor/github.com/mwitkow/go-http-dialer
+	url = https://github.com/mwitkow/go-http-dialer
+
