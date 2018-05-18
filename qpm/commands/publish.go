@@ -71,6 +71,9 @@ func LoginPrompt(ctx context.Context, client msg.QpmClient) (string, error) {
 	if err != nil {
 		if grpc.Code(err) == codes.NotFound {
 			fmt.Println("User not found. Confirm password to create a new user.")
+			fmt.Println("Your name, email and password will only be used to identify you as the package author.")
+			fmt.Println("This data will not be shared with any 3rd party or used for any other purpose.")
+			fmt.Println("Use <Ctrl+C> to abort if you do not agree to this.")
 			confirm := get("password", true)
 			if password != confirm {
 				return "", fmt.Errorf("Passwords do not match.")
