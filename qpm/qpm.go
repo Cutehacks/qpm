@@ -48,6 +48,7 @@ func main() {
 
 	if len(os.Args) < 2 {
 		Usage()
+		os.Exit(1)
 		return
 	}
 
@@ -55,6 +56,7 @@ func main() {
 
 	if !registry.Exists(subCmd) {
 		Usage()
+		os.Exit(1)
 		return
 	}
 
@@ -70,5 +72,7 @@ func main() {
 
 	fs.Parse(os.Args[2:])
 
-	command.Run()
+	if command.Run() != nil {
+		os.Exit(1)
+	}
 }
