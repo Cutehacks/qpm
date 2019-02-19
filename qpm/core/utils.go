@@ -133,7 +133,7 @@ func printRow(screenWidth int, columnSpacing int, columnWidths []int, columns []
 	fmt.Printf("\n")
 }
 
-// Renders the given template using the fields contained in the data parameter and
+// WriteTemplate renders the given template using the fields contained in the data parameter and
 // outputs the result to the given file. If the file already exists, it will be
 // overwritten.
 func WriteTemplate(filename string, tpl *template.Template, data interface{}) error {

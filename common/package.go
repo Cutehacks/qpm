@@ -163,7 +163,7 @@ func (pw PackageWrapper) Save() error {
 	return marshaller.Marshal(file, pw.Package)
 }
 
-// Remove a package from this package's list of dependencies.
+// RemoveDependency removes a package from this package's list of dependencies.
 func (pw *PackageWrapper) RemoveDependency(dep *PackageWrapper) {
 	for i, d := range pw.Dependencies {
 		if packageName(d) == dep.Name {
