@@ -23,7 +23,7 @@ script:
   - make .all
 
 go:
-  - 1.7
+  - 1.14
 
 deploy:
   skip_cleanup: true
