@@ -2,12 +2,17 @@ package core
 
 import (
 	"fmt"
+	"log"
+	"net"
+	"net/url"
+	"os"
+	"runtime"
+	"time"
+
+	"github.com/mwitkow/go-http-dialer"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
-	"log"
-	"os"
 	msg "qpm.io/common/messages"
-	"runtime"
 )
 
 var (
@@ -38,17 +43,43 @@ func NewContext() *Context {
 		address = Address
 	}
 
-	noTls := os.Getenv("NO_TLS") == "1"
+	// noTls := os.Getenv("NO_TLS") == "1"
 
-	var tlsOption grpc.DialOption
-	if noTls {
-		tlsOption = grpc.WithInsecure()
+	// var tlsOption grpc.DialOption
+	// if noTls {
+	// 	tlsOption = grpc.WithInsecure()
+	// } else {
+	// 	tlsOption = grpc.WithTransportCredentials(credentials.NewClientTLSFromCert(nil, ""))
+	// }
+
+	// conn, err := grpc.Dial(address, tlsOption, grpc.WithUserAgent(UA))
+
+	opts := make([]grpc.DialOption, 0)
+	opts = append(opts, grpc.WithUserAgent(UA))
+
+	noTLS := os.Getenv("NO_TLS") == "1"
+	if noTLS {
+		opts = append(opts, grpc.WithInsecure())
 	} else {
-		tlsOption = grpc.WithTransportCredentials(credentials.NewClientTLSFromCert(nil, ""))
+		opts = append(opts, grpc.WithTransportCredentials(credentials.NewClientTLSFromCert(nil, "")))
 	}
 
-	conn, err := grpc.Dial(address, tlsOption, grpc.WithUserAgent(UA))
+	httpProxy := os.Getenv("HTTP_PROXY")
+	if httpProxy != "" {
+		log.Println("env: ", httpProxy)
+		httpProxyURL, err := url.Parse(httpProxy)
+		if err != nil {
+			log.Fatalf("did not get http proxy: %v", err)
+		} else {
+			proxyDialer := http_dialer.New(httpProxyURL)
+			opts = append(opts, grpc.WithDialer(func(addr string, timeout time.Duration) (net.Conn, error) { return proxyDialer.Dial("tcp", addr) }))
+		}
+	}
 
+	conn, err := grpc.Dial(address, opts...)
+	if err != nil {
+		log.Fatalf("did not connect: %v", err)
+	}
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
