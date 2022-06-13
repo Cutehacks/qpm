@@ -1,9 +1,11 @@
 
 [![Build Status](https://travis-ci.org/Cutehacks/qpm.svg?branch=master)](https://travis-ci.org/Cutehacks/qpm)
 
-[![Join us on the #qpm channel](http://org-qtmob-slackin.herokuapp.com/badge.svg)](http://slackin.qtmob.org)
-
 [Roadmap](https://github.com/Cutehacks/qpm/projects/1)
+
+# Important
+
+We will be shutting down the qpm servers. We recommend that you use [Conan](https://conan.io/) instead.
 
 # Introduction
 
